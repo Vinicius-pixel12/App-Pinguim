@@ -79,6 +79,8 @@ export function FeedPost({
           className="h-full w-full object-cover"
           loading="lazy"
           onDoubleClick={() => setLiked(true)}
+          onClick={isOwn ? () => openGeminiWithImage(post.image) : undefined}
+          style={isOwn ? { cursor: "pointer" } : undefined}
         />
 
         {/* Vertical action rail */}
