@@ -155,6 +155,44 @@ export function FeedPost({
         open={commentsOpen}
         onOpenChange={setCommentsOpen}
       />
+
+      <Dialog open={likesOpen} onOpenChange={setLikesOpen}>
+        <DialogContent className="max-w-sm rounded-2xl p-0">
+          <DialogHeader className="border-b border-border p-4">
+            <DialogTitle className="text-center text-base font-semibold">
+              Curtidas
+            </DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto p-2">
+            {likersFor(post.id, likeCount).map((u) => (
+              <Link
+                key={u.username}
+                to="/perfil/$username"
+                params={{ username: u.username }}
+                onClick={() => setLikesOpen(false)}
+                className="flex items-center gap-3 rounded-xl p-2 hover:bg-muted"
+              >
+                <img
+                  src={u.avatar}
+                  alt={u.username}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-semibold">
+                    {u.username}
+                  </div>
+                  {u.name && (
+                    <div className="truncate text-xs text-muted-foreground">
+                      {u.name}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </article>
   );
 }
