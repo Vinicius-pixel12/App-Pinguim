@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { X, Heart, Send, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import type { MockStory } from "@/lib/mock-data";
+import type { MockStory, StoryMedia } from "@/lib/mock-data";
 
-const STORY_DURATION = 5000; // 5s per media
+const IMAGE_DURATION = 5000;
+const VIDEO_MAX = 10000;
 
 function timeAgo(ms: number) {
   const diff = Date.now() - ms;
@@ -13,6 +14,35 @@ function timeAgo(ms: number) {
     return `há ${m}m`;
   }
   return `há ${h}h`;
+}
+
+function mediaDuration(m: StoryMedia) {
+  if (m.kind === "video") {
+    return Math.min(VIDEO_MAX, Math.max(1000, (m.duration ?? 10) * 1000));
+  }
+  return IMAGE_DURATION;
+}
+
+function renderCaption(text: string, mentions: string[] = []) {
+  const parts = text.split(/(@[\w.]+)/g);
+  return parts.map((p, i) => {
+    if (p.startsWith("@")) {
+      const uname = p.slice(1);
+      if (mentions.includes(uname)) {
+        return (
+          <Link
+            key={i}
+            to="/perfil/$username"
+            params={{ username: uname }}
+            className="font-semibold text-white underline underline-offset-2"
+          >
+            {p}
+          </Link>
+        );
+      }
+    }
+    return <span key={i}>{p}</span>;
+  });
 }
 
 export function StoryViewer({
@@ -30,11 +60,12 @@ export function StoryViewer({
   const [liked, setLiked] = useState(false);
   const [comment, setComment] = useState("");
   const [progress, setProgress] = useState(0);
-  const startTs = useRef<number>(Date.now());
   const rafRef = useRef<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const story = stories[userIdx];
   const media = story?.media[mediaIdx];
+  const duration = useMemo(() => (media ? mediaDuration(media) : IMAGE_DURATION), [media]);
 
   const next = () => {
     setLiked(false);
@@ -63,7 +94,6 @@ export function StoryViewer({
 
   // Progress ticker
   useEffect(() => {
-    startTs.current = Date.now();
     setProgress(0);
     let last = Date.now();
     const tick = () => {
@@ -71,7 +101,7 @@ export function StoryViewer({
       if (!paused) {
         const delta = now - last;
         setProgress((p) => {
-          const np = p + (delta / STORY_DURATION) * 100;
+          const np = p + (delta / duration) * 100;
           if (np >= 100) {
             next();
             return 0;
@@ -87,7 +117,16 @@ export function StoryViewer({
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userIdx, mediaIdx, paused]);
+  }, [userIdx, mediaIdx, paused, duration]);
+
+  // Video handling
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v || !media || media.kind !== "video") return;
+    v.currentTime = media.startTime ?? 0;
+    if (!paused) v.play().catch(() => {});
+    else v.pause();
+  }, [media, paused]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -156,15 +195,32 @@ export function StoryViewer({
           onPointerUp={() => setPaused(false)}
           onPointerLeave={() => setPaused(false)}
         >
-          <img
-            src={media.image}
-            alt=""
-            className="h-full w-full object-cover"
-            draggable={false}
-          />
+          {media.kind === "video" && media.mediaUrl ? (
+            <video
+              ref={videoRef}
+              src={media.mediaUrl}
+              poster={media.image}
+              className="h-full w-full object-cover"
+              playsInline
+              muted
+              onTimeUpdate={(e) => {
+                const v = e.currentTarget;
+                const start = media.startTime ?? 0;
+                const cap = start + (duration / 1000);
+                if (v.currentTime >= cap) next();
+              }}
+            />
+          ) : (
+            <img
+              src={media.image}
+              alt=""
+              className="h-full w-full object-cover"
+              draggable={false}
+            />
+          )}
           {media.caption && (
             <div className="absolute bottom-24 left-4 right-4 rounded-xl bg-black/40 px-3 py-2 text-center text-sm text-white backdrop-blur-sm">
-              {media.caption}
+              {renderCaption(media.caption, media.mentions)}
             </div>
           )}
 
