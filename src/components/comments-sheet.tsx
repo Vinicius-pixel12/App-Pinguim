@@ -304,6 +304,7 @@ function CommentRow({
   small,
   onLike,
   onReply,
+  onShowLikes,
 }: {
   author: (typeof users)[number];
   text: string;
@@ -313,6 +314,7 @@ function CommentRow({
   small?: boolean;
   onLike: () => void;
   onReply: () => void;
+  onShowLikes: () => void;
 }) {
   return (
     <div className="flex items-start gap-3">
@@ -337,15 +339,16 @@ function CommentRow({
         <div className="mt-1 flex items-center gap-4 text-[11px] text-muted-foreground">
           <span>{time}</span>
           {likes > 0 && (
-            <span>
+            <button onClick={onShowLikes} className="hover:underline">
               {likes} curtida{likes === 1 ? "" : "s"}
-            </span>
+            </button>
           )}
           <button onClick={onReply} className="font-semibold">
             Responder
           </button>
         </div>
       </div>
+
       <button onClick={onLike} className="mt-1 shrink-0 p-1">
         <Heart
           className={`h-4 w-4 ${liked ? "text-destructive" : "text-muted-foreground"}`}
