@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Heart, Send, CornerDownRight, X } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import { users, currentUser } from "@/lib/mock-data";
@@ -286,14 +287,22 @@ function CommentRow({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <img
-        src={author.avatar}
-        alt={author.username}
-        className={`${small ? "h-7 w-7" : "h-9 w-9"} shrink-0 rounded-full object-cover`}
-      />
+      <Link to="/perfil/$username" params={{ username: author.username }} className="shrink-0">
+        <img
+          src={author.avatar}
+          alt={author.username}
+          className={`${small ? "h-7 w-7" : "h-9 w-9"} rounded-full object-cover`}
+        />
+      </Link>
       <div className="min-w-0 flex-1">
         <div className="text-sm text-foreground">
-          <span className="font-semibold">{author.username}</span>{" "}
+          <Link
+            to="/perfil/$username"
+            params={{ username: author.username }}
+            className="font-semibold hover:underline"
+          >
+            {author.username}
+          </Link>{" "}
           <span>{text}</span>
         </div>
         <div className="mt-1 flex items-center gap-4 text-[11px] text-muted-foreground">
