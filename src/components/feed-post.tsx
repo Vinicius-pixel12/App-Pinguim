@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Send, Bookmark, Repeat2, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { CommentsSheet } from "@/components/comments-sheet";
 
 export function FeedPost({
   post,
