@@ -1,19 +1,38 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { stories } from "@/lib/mock-data";
+import { StoryViewer } from "@/components/story-viewer";
 
 export function StoriesBar() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  // Only stories with media are shown in viewer
+  const viewable = stories.filter((s) => !s.isOwn && s.media.length > 0);
+
+  const openStory = (username: string) => {
+    const idx = viewable.findIndex((s) => s.user.username === username);
+    if (idx >= 0) setOpenIdx(idx);
+  };
+
   return (
     <div className="bg-transparent">
       <div className="no-scrollbar mx-auto flex max-w-md gap-3 overflow-x-auto px-4 py-4">
         {stories.map((s) => {
+          const hasUnseen = !s.isOwn && s.media.length > 0 && !s.seen;
+          const ringClass = s.isOwn
+            ? "rounded-[22px] bg-card p-1.5 shadow-sm"
+            : hasUnseen
+              ? "rounded-[22px] p-[2px] shadow-sm story-ring-pulse"
+              : "rounded-[22px] p-[2px] shadow-sm bg-border";
+
           const inner = (
-            <div className="relative rounded-[22px] bg-card p-1.5 shadow-sm">
-              <div className="relative">
+            <div className={ringClass}>
+              <div className="relative rounded-[20px] bg-card p-1">
                 <img
                   src={s.user.avatar}
                   alt={s.user.username}
-                  className="h-[62px] w-[62px] rounded-[16px] object-cover"
+                  className="h-[58px] w-[58px] rounded-[14px] object-cover"
                   loading="lazy"
                 />
                 {s.isOwn && (
@@ -27,23 +46,38 @@ export function StoriesBar() {
               </span>
             </div>
           );
-          return s.isOwn ? (
-            <Link key={s.id} to="/perfil" className="flex w-[74px] shrink-0 flex-col items-center">
-              {inner}
-            </Link>
-          ) : (
-            <Link
+
+          if (s.isOwn) {
+            return (
+              <Link
+                key={s.id}
+                to="/perfil"
+                className="flex w-[74px] shrink-0 flex-col items-center"
+              >
+                {inner}
+              </Link>
+            );
+          }
+
+          return (
+            <button
               key={s.id}
-              to="/perfil/$username"
-              params={{ username: s.user.username }}
+              onClick={() => openStory(s.user.username)}
               className="flex w-[74px] shrink-0 flex-col items-center"
             >
               {inner}
-            </Link>
+            </button>
           );
         })}
       </div>
+
+      {openIdx !== null && (
+        <StoryViewer
+          stories={viewable}
+          startIndex={openIdx}
+          onClose={() => setOpenIdx(null)}
+        />
+      )}
     </div>
   );
 }
-

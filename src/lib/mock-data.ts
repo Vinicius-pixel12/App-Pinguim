@@ -24,12 +24,21 @@ export type MockPost = {
   saved?: boolean;
 };
 
+export type StoryMedia = {
+  id: string;
+  image: string;
+  createdAt: number; // ms epoch
+  caption?: string;
+};
+
 export type MockStory = {
   id: string;
   user: MockUser;
   isOwn?: boolean;
   seen?: boolean;
+  media: StoryMedia[];
 };
+
 
 export type ConversationRequest = {
   id: string;
@@ -71,14 +80,24 @@ export const users: MockUser[] = [
   { id: "u7", username: "julia.p", name: "Júlia", age: 21, city: "Salvador, BA", avatar: avatar("julia"), isPrivate: true, followers: 640, following: 300, posts: 15 },
 ];
 
+const hoursAgo = (h: number) => Date.now() - h * 60 * 60 * 1000;
+const storyMedia = (seed: string, count: number, baseHoursAgo: number): StoryMedia[] =>
+  Array.from({ length: count }).map((_, i) => ({
+    id: `${seed}-m${i}`,
+    image: `https://picsum.photos/seed/${seed}-story-${i}/900/1600`,
+    createdAt: hoursAgo(baseHoursAgo + i * 0.5),
+    caption: i === 0 ? undefined : "Momento capturado ✨",
+  }));
+
 export const stories: MockStory[] = [
-  { id: "s0", user: currentUser, isOwn: true },
-  { id: "s1", user: users[1] },
-  { id: "s2", user: users[2] },
-  { id: "s3", user: users[3] },
-  { id: "s4", user: users[4] },
-  { id: "s5", user: users[5] },
-  { id: "s6", user: users[6] },
+  { id: "s0", user: currentUser, isOwn: true, media: [] },
+  { id: "s1", user: users[1], media: storyMedia("luiza", 2, 1) },
+  { id: "s2", user: users[2], media: storyMedia("lofti", 1, 3), seen: true },
+  { id: "s3", user: users[3], media: storyMedia("kenzo", 3, 5) },
+  { id: "s4", user: users[4], media: storyMedia("enzo", 2, 8) },
+  { id: "s5", user: users[5], media: storyMedia("monica", 1, 12), seen: true },
+
+  { id: "s6", user: users[6], media: storyMedia("julia", 2, 20) },
 ];
 
 export const posts: MockPost[] = [
