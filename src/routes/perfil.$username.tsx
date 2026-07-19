@@ -33,7 +33,9 @@ function PerfilUsuario() {
   const navigate = useNavigate();
   const [following, setFollowing] = useState(false);
   const [converse, setConverse] = useState<null | typeof user>(null);
+  const [viewing, setViewing] = useState<MockPost | null>(null);
   const isPrivate = !!user.isPrivate;
+
   const canSeePosts = !isPrivate || following;
 
   const userPosts = posts.filter((p) => p.user.id === user.id).concat(posts).slice(0, 9);
