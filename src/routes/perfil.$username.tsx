@@ -107,11 +107,16 @@ function PerfilUsuario() {
       {canSeePosts ? (
         <div className="grid grid-cols-3 gap-[2px]">
           {userPosts.map((p, i) => (
-            <div key={`${p.id}-${i}`} className="aspect-square overflow-hidden bg-muted">
+            <button
+              key={`${p.id}-${i}`}
+              onClick={() => setViewing(p)}
+              className="aspect-square overflow-hidden bg-muted"
+            >
               <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
-            </div>
+            </button>
           ))}
         </div>
+
       ) : (
         <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-foreground">
