@@ -64,7 +64,7 @@ export function FeedPost({
                 strokeWidth={1.75}
               />
             </IconBtn>
-            <IconBtn aria-label="Comentar">
+            <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
               <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
             <IconBtn aria-label="Enviar">
