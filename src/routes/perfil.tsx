@@ -17,6 +17,9 @@ function Perfil() {
   const [viewing, setViewing] = useState<MockPost | null>(null);
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
+  const [profile] = useProfile();
+  const verified = profile.selfieVerified && profile.documentVerified;
+
 
   return (
     <>
