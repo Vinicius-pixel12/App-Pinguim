@@ -9,8 +9,31 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+function likersFor(seedId: string, count: number) {
+  if (count <= 0) return [];
+  const base = seedId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const pool = users.filter((u) => u.username !== currentUser.username);
+  const n = Math.min(count, pool.length);
+  const picked: typeof pool = [];
+  const used = new Set<number>();
+  for (let i = 0; i < n; i++) {
+    let idx = (base + i * 7) % pool.length;
+    while (used.has(idx)) idx = (idx + 1) % pool.length;
+    used.add(idx);
+    picked.push(pool[idx]);
+  }
+  return picked;
+}
+
 
 type Reply = {
   id: string;
