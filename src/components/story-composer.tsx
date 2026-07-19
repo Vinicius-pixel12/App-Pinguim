@@ -66,9 +66,21 @@ export function StoryComposer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
+  const current = drafts[idx];
+
+  // Mention autocomplete
+  const mentionQuery = useMemo(() => {
+    if (!current) return null;
+    const el = captionRef.current;
+    if (!el) return null;
+    const pos = el.selectionStart ?? current.caption.length;
+    const before = current.caption.slice(0, pos);
+    const m = before.match(/@([\w.]*)$/);
+    return m ? m[1] : null;
+  }, [current?.caption, current?.id]);
+
   if (!open) return null;
 
-  const current = drafts[idx];
 
   const handleFiles = async (files: FileList | null) => {
     if (!files) return;
