@@ -6,6 +6,10 @@ export type MockUser = {
   city: string;
   avatar: string;
   bio?: string;
+  isPrivate?: boolean;
+  followers?: number;
+  following?: number;
+  posts?: number;
 };
 
 export type MockPost = {
@@ -58,13 +62,13 @@ export const currentUser: MockUser = {
 };
 
 export const users: MockUser[] = [
-  { id: "u1", username: "maria.oliveira", name: "Maria", age: 22, city: "São Paulo, SP", avatar: avatar("maria"), bio: "Adorei conhecer novas pessoas e fazer novas amizades. ✨" },
-  { id: "u2", username: "lil_lapisla", name: "Luiza", age: 24, city: "Rio de Janeiro, RJ", avatar: avatar("luiza") },
-  { id: "u3", username: "lofti232", name: "Lofti", age: 26, city: "Curitiba, PR", avatar: avatar("lofti") },
-  { id: "u4", username: "kenzoere", name: "Kenzo", age: 23, city: "Belo Horizonte, MG", avatar: avatar("kenzo") },
-  { id: "u5", username: "photosbyen", name: "Enzo", age: 28, city: "Porto Alegre, RS", avatar: avatar("enzo") },
-  { id: "u6", username: "monicamoras", name: "Mônica", age: 25, city: "Florianópolis, SC", avatar: avatar("monica") },
-  { id: "u7", username: "julia.p", name: "Júlia", age: 21, city: "Salvador, BA", avatar: avatar("julia") },
+  { id: "u1", username: "maria.oliveira", name: "Maria", age: 22, city: "São Paulo, SP", avatar: avatar("maria"), bio: "Adorei conhecer novas pessoas e fazer novas amizades. ✨", isPrivate: false, followers: 1240, following: 312, posts: 18 },
+  { id: "u2", username: "lil_lapisla", name: "Luiza", age: 24, city: "Rio de Janeiro, RJ", avatar: avatar("luiza"), isPrivate: true, followers: 842, following: 190, posts: 24, bio: "Só amigos próximos 💌" },
+  { id: "u3", username: "lofti232", name: "Lofti", age: 26, city: "Curitiba, PR", avatar: avatar("lofti"), isPrivate: false, followers: 512, following: 220, posts: 9 },
+  { id: "u4", username: "kenzoere", name: "Kenzo", age: 23, city: "Belo Horizonte, MG", avatar: avatar("kenzo"), isPrivate: true, followers: 331, following: 140, posts: 12 },
+  { id: "u5", username: "photosbyen", name: "Enzo", age: 28, city: "Porto Alegre, RS", avatar: avatar("enzo"), isPrivate: false, followers: 2210, following: 410, posts: 42, bio: "Fotógrafo 📷 | Viagens" },
+  { id: "u6", username: "monicamoras", name: "Mônica", age: 25, city: "Florianópolis, SC", avatar: avatar("monica"), isPrivate: false, followers: 987, following: 260, posts: 20, bio: "Mar, sol e café ☕" },
+  { id: "u7", username: "julia.p", name: "Júlia", age: 21, city: "Salvador, BA", avatar: avatar("julia"), isPrivate: true, followers: 640, following: 300, posts: 15 },
 ];
 
 export const stories: MockStory[] = [
