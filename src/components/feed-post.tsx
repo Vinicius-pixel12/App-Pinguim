@@ -2,8 +2,31 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Send, Bookmark, Repeat2, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
+import { users, currentUser } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+function likersFor(seedId: string, count: number) {
+  if (count <= 0) return [];
+  const base = seedId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const pool = users.filter((u) => u.username !== currentUser.username);
+  const n = Math.min(count, pool.length);
+  const picked: typeof pool = [];
+  const used = new Set<number>();
+  for (let i = 0; i < n; i++) {
+    let idx = (base + i * 7) % pool.length;
+    while (used.has(idx)) idx = (idx + 1) % pool.length;
+    used.add(idx);
+    picked.push(pool[idx]);
+  }
+  return picked;
+}
 
 export function FeedPost({
   post,
@@ -15,6 +38,9 @@ export function FeedPost({
   const [liked, setLiked] = useState(!!post.liked);
   const [saved, setSaved] = useState(!!post.saved);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [likesOpen, setLikesOpen] = useState(false);
+  const likeCount = post.likes + (liked && !post.liked ? 1 : 0) + (!liked && post.liked ? -1 : 0);
+
 
   return (
     <article className="mx-3 mb-4 overflow-hidden rounded-3xl bg-card shadow-sm">
@@ -100,9 +126,13 @@ export function FeedPost({
 
       {/* Counts + caption */}
       <div className="space-y-1 px-4 pb-4">
-        <div className="text-sm font-semibold text-foreground">
-          {post.likes.toLocaleString("pt-BR")} curtidas
-        </div>
+        <button
+          onClick={() => setLikesOpen(true)}
+          className="text-sm font-semibold text-foreground hover:underline"
+        >
+          {likeCount.toLocaleString("pt-BR")} curtidas
+        </button>
+
         <p className="text-sm text-foreground">
           <span className="font-semibold">{post.user.username}</span>{" "}
           <span>{post.caption}</span>
@@ -125,6 +155,44 @@ export function FeedPost({
         open={commentsOpen}
         onOpenChange={setCommentsOpen}
       />
+
+      <Dialog open={likesOpen} onOpenChange={setLikesOpen}>
+        <DialogContent className="max-w-sm rounded-2xl p-0">
+          <DialogHeader className="border-b border-border p-4">
+            <DialogTitle className="text-center text-base font-semibold">
+              Curtidas
+            </DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto p-2">
+            {likersFor(post.id, likeCount).map((u) => (
+              <Link
+                key={u.username}
+                to="/perfil/$username"
+                params={{ username: u.username }}
+                onClick={() => setLikesOpen(false)}
+                className="flex items-center gap-3 rounded-xl p-2 hover:bg-muted"
+              >
+                <img
+                  src={u.avatar}
+                  alt={u.username}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-semibold">
+                    {u.username}
+                  </div>
+                  {u.name && (
+                    <div className="truncate text-xs text-muted-foreground">
+                      {u.name}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
     </article>
   );
 }
