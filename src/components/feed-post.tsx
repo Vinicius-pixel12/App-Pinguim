@@ -14,35 +14,31 @@ export function FeedPost({
   const [saved, setSaved] = useState(!!post.saved);
 
   return (
-    <article className="border-b border-border bg-background">
+    <article className="mx-3 mb-4 overflow-hidden rounded-3xl bg-card shadow-sm">
       {/* Header */}
-      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-3">
+      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 pt-4 pb-3">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="rounded-full story-ring">
-            <div className="rounded-full bg-background p-[2px]">
-              <img
-                src={post.user.avatar}
-                alt={post.user.username}
-                className="h-9 w-9 rounded-full object-cover"
-              />
-            </div>
-          </div>
+          <img
+            src={post.user.avatar}
+            alt={post.user.username}
+            className="h-10 w-10 rounded-full object-cover"
+          />
           <div className="min-w-0">
-            <div className="flex items-center gap-1 text-sm font-semibold text-foreground">
-              <span className="truncate">{post.user.username}</span>
+            <div className="truncate text-sm font-semibold text-foreground">
+              {post.user.username}
             </div>
             <div className="truncate text-[11px] text-muted-foreground">
               {post.user.city} · Público
             </div>
           </div>
         </div>
-        <button aria-label="Mais opções" className="p-1 text-foreground">
+        <button aria-label="Mais opções" className="p-1 text-muted-foreground">
           <MoreHorizontal className="h-5 w-5" />
         </button>
       </header>
 
       {/* Image */}
-      <div className="relative aspect-square w-full bg-muted">
+      <div className="relative mx-3 aspect-square overflow-hidden rounded-2xl bg-muted">
         <img
           src={post.image}
           alt=""
@@ -53,13 +49,9 @@ export function FeedPost({
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between px-3 py-2">
-        <div className="flex items-center gap-1">
-          <IconBtn
-            aria-label="Curtir"
-            onClick={() => setLiked((v) => !v)}
-            active={liked}
-          >
+      <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center gap-3">
+          <IconBtn aria-label="Curtir" onClick={() => setLiked((v) => !v)}>
             <Heart
               className={`h-6 w-6 ${liked ? "text-destructive" : "text-foreground"}`}
               fill={liked ? "currentColor" : "none"}
@@ -83,13 +75,13 @@ export function FeedPost({
       </div>
 
       {/* Converse button */}
-      <div className="px-4 pb-2">
+      <div className="px-3 pb-3">
         <Button
           onClick={() => onRequestConverse(post.user)}
-          className="w-full gap-2 bg-gradient-to-r from-primary to-[oklch(0.55_0.22_340)] text-primary-foreground hover:opacity-95"
+          className="w-full gap-2 rounded-2xl bg-gradient-to-r from-primary to-[oklch(0.55_0.22_340)] py-6 text-base font-semibold text-primary-foreground hover:opacity-95"
         >
-          <Hand className="h-4 w-4" />
-          Conversar com {post.user.name} · R$ 4,97
+          <Hand className="h-5 w-5" />
+          Iniciar Conversa (R$ 4,97)
         </Button>
       </div>
 
@@ -117,14 +109,10 @@ export function FeedPost({
 
 function IconBtn({
   children,
-  active,
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }) {
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <button
-      {...props}
-      className={`p-2 transition-transform active:scale-90 ${active ? "" : ""}`}
-    >
+    <button {...props} className="transition-transform active:scale-90">
       {children}
     </button>
   );
