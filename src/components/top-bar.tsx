@@ -3,8 +3,8 @@ import { PlusSquare, Heart, Send } from "lucide-react";
 
 export function TopBar() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
-      <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
+    <header className="sticky top-0 z-30 bg-background/90 backdrop-blur">
+      <div className="mx-auto flex max-w-md items-center justify-between px-5 py-4">
         <Link to="/" className="font-brand text-3xl leading-none text-foreground">
           Pinguim
         </Link>
