@@ -220,7 +220,9 @@ export function CommentsSheet({
                 onReply={() =>
                   setReplyTo({ commentId: c.id, username: c.author.username })
                 }
+                onShowLikes={() => setLikersFor_({ id: c.id, count: c.likes })}
               />
+
               {c.replies.length > 0 && (
                 <div className="mt-3 space-y-3 pl-11">
                   {c.replies.map((r) => (
