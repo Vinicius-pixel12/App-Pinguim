@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { stories } from "@/lib/mock-data";
 
@@ -5,8 +6,8 @@ export function StoriesBar() {
   return (
     <div className="bg-transparent">
       <div className="no-scrollbar mx-auto flex max-w-md gap-3 overflow-x-auto px-4 py-4">
-        {stories.map((s) => (
-          <button key={s.id} className="flex w-[74px] shrink-0 flex-col items-center">
+        {stories.map((s) => {
+          const inner = (
             <div className="relative rounded-[22px] bg-card p-1.5 shadow-sm">
               <div className="relative">
                 <img
@@ -25,9 +26,24 @@ export function StoriesBar() {
                 {s.isOwn ? "Seu Momento" : s.user.username}
               </span>
             </div>
-          </button>
-        ))}
+          );
+          return s.isOwn ? (
+            <Link key={s.id} to="/perfil" className="flex w-[74px] shrink-0 flex-col items-center">
+              {inner}
+            </Link>
+          ) : (
+            <Link
+              key={s.id}
+              to="/perfil/$username"
+              params={{ username: s.user.username }}
+              className="flex w-[74px] shrink-0 flex-col items-center"
+            >
+              {inner}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
 }
+
