@@ -109,15 +109,29 @@ function Perfil() {
       </div>
 
       <div className="grid grid-cols-3 gap-[2px]">
-        {posts.concat(posts).slice(0, 12).map((p, i) => (
-          <div key={`${p.id}-${i}`} className="aspect-square overflow-hidden bg-muted">
+        {visiblePosts.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => setViewing(p)}
+            className="aspect-square overflow-hidden bg-muted"
+          >
             <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
-          </div>
+          </button>
         ))}
       </div>
+
+      <PostViewer
+        post={viewing}
+        open={!!viewing}
+        onOpenChange={(v) => !v && setViewing(null)}
+        canDelete
+        canEditWithGemini
+        onDelete={(p) => setDeleted((s) => new Set(s).add(p.id))}
+      />
     </>
   );
 }
+
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
