@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Settings, Grid3x3, Bookmark, UserSquare2, Wallet } from "lucide-react";
-import { currentUser, posts, wallet, type MockPost } from "@/lib/mock-data";
+import { Settings, Grid3x3, Bookmark, UserSquare2, Wallet, BadgeCheck } from "lucide-react";
+import { posts, wallet, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { PostViewer } from "@/components/post-viewer";
+import { useProfile } from "@/lib/profile";
 
 
 export const Route = createFileRoute("/perfil")({
@@ -16,12 +17,18 @@ function Perfil() {
   const [viewing, setViewing] = useState<MockPost | null>(null);
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
+  const [profile] = useProfile();
+  const verified = profile.selfieVerified && profile.documentVerified;
+
 
   return (
     <>
 
       <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
-        <h1 className="truncate text-lg font-semibold">{currentUser.username}</h1>
+        <h1 className="truncate text-lg font-semibold flex items-center gap-1">
+          {profile.username}
+          {verified && <BadgeCheck className="h-4 w-4 text-primary" />}
+        </h1>
         <Link to="/configuracoes" aria-label="Configurações" className="p-1">
           <Settings className="h-5 w-5" />
         </Link>
@@ -32,7 +39,7 @@ function Perfil() {
           <div className="rounded-full story-ring">
             <div className="rounded-full bg-background p-[2px]">
               <img
-                src={currentUser.avatar}
+                src={profile.avatar}
                 alt=""
                 className="h-20 w-20 rounded-full object-cover"
               />
@@ -46,22 +53,28 @@ function Perfil() {
         </div>
 
         <div className="mt-3">
-          <div className="font-semibold text-foreground">
-            {currentUser.name}, {currentUser.age}
+          <div className="font-semibold text-foreground flex items-center gap-1">
+            {profile.displayName}{profile.age ? `, ${profile.age}` : ""}
+            {verified && <BadgeCheck className="h-4 w-4 text-primary" />}
           </div>
-          <div className="text-sm text-muted-foreground">{currentUser.city}</div>
-          {currentUser.bio && <p className="mt-1 text-sm">{currentUser.bio}</p>}
+          <div className="text-sm text-muted-foreground">
+            {[profile.city, profile.state].filter(Boolean).join(", ")}
+          </div>
+          {profile.bio && <p className="mt-1 text-sm">{profile.bio}</p>}
         </div>
 
         <div className="mt-4 flex gap-2">
-          <Button variant="secondary" className="flex-1">
-            Editar perfil
-          </Button>
+          <Link to="/editar-perfil" className="flex-1">
+            <Button variant="secondary" className="w-full">
+              Editar perfil
+            </Button>
+          </Link>
           <Button variant="secondary" className="flex-1">
             Compartilhar
           </Button>
         </div>
       </section>
+
 
       {/* Preview como visitante */}
       <section className="mx-4 mb-4 rounded-xl border border-dashed border-border bg-card p-3">
