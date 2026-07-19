@@ -14,6 +14,7 @@ export function FeedPost({
 }) {
   const [liked, setLiked] = useState(!!post.liked);
   const [saved, setSaved] = useState(!!post.saved);
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   return (
     <article className="mx-3 mb-4 overflow-hidden rounded-3xl bg-card shadow-sm">
