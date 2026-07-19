@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Settings, Grid3x3, Bookmark, UserSquare2, Wallet } from "lucide-react";
+import { Settings, Grid3x3, Bookmark, UserSquare2, Wallet, BadgeCheck } from "lucide-react";
 import { currentUser, posts, wallet, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { PostViewer } from "@/components/post-viewer";
+import { useProfile } from "@/lib/profile";
 
 
 export const Route = createFileRoute("/perfil")({
