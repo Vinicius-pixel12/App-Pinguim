@@ -6,20 +6,48 @@ import { StoryViewer } from "@/components/story-viewer";
 
 export function StoriesBar() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const [seenIds, setSeenIds] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const raw = window.localStorage.getItem("pinguim:seen-stories");
+      return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+    } catch {
+      return new Set();
+    }
+  });
 
   // Only stories with media are shown in viewer
   const viewable = stories.filter((s) => !s.isOwn && s.media.length > 0);
 
   const openStory = (username: string) => {
     const idx = viewable.findIndex((s) => s.user.username === username);
-    if (idx >= 0) setOpenIdx(idx);
+    if (idx >= 0) {
+      setOpenIdx(idx);
+      const story = viewable[idx];
+      setSeenIds((prev) => {
+        if (prev.has(story.id)) return prev;
+        const next = new Set(prev);
+        next.add(story.id);
+        try {
+          window.localStorage.setItem(
+            "pinguim:seen-stories",
+            JSON.stringify(Array.from(next)),
+          );
+        } catch {
+          /* ignore */
+        }
+        return next;
+      });
+    }
   };
 
   return (
     <div className="bg-transparent">
       <div className="no-scrollbar mx-auto flex max-w-md gap-3 overflow-x-auto px-4 py-4">
         {stories.map((s) => {
-          const hasUnseen = !s.isOwn && s.media.length > 0 && !s.seen;
+          const hasUnseen =
+            !s.isOwn && s.media.length > 0 && !s.seen && !seenIds.has(s.id);
+
           const ringClass = s.isOwn
             ? "rounded-[22px] bg-card p-1.5 shadow-sm"
             : hasUnseen
