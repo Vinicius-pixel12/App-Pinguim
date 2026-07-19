@@ -26,9 +26,14 @@ export type MockPost = {
 
 export type StoryMedia = {
   id: string;
-  image: string;
+  image: string; // poster / thumbnail
+  mediaUrl?: string; // video URL if kind === "video"
+  kind?: "image" | "video";
+  startTime?: number; // video trim start (s)
+  duration?: number; // capped video duration (s)
   createdAt: number; // ms epoch
   caption?: string;
+  mentions?: string[]; // usernames tagged with @
 };
 
 export type MockStory = {
