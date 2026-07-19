@@ -6,15 +6,17 @@ import { StoryViewer } from "@/components/story-viewer";
 
 export function StoriesBar() {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
-  const [seenIds, setSeenIds] = useState<Set<string>>(() => {
-    if (typeof window === "undefined") return new Set();
+  const [seenIds, setSeenIds] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
     try {
       const raw = window.localStorage.getItem("pinguim:seen-stories");
-      return new Set(raw ? (JSON.parse(raw) as string[]) : []);
+      if (raw) setSeenIds(new Set(JSON.parse(raw) as string[]));
     } catch {
-      return new Set();
+      /* ignore */
     }
-  });
+  }, []);
+
 
   // Only stories with media are shown in viewer
   const viewable = stories.filter((s) => !s.isOwn && s.media.length > 0);
