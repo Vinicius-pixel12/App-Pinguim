@@ -29,7 +29,7 @@ function Feed() {
     <>
       <TopBar />
       <StoriesBar />
-      <div className="divide-y divide-border">
+      <div>
         {posts.map((p) => (
           <FeedPost key={p.id} post={p} onRequestConverse={handleRequest} />
         ))}
