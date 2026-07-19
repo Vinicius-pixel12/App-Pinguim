@@ -241,8 +241,10 @@ export function CommentsSheet({
                           username: r.author.username,
                         })
                       }
+                      onShowLikes={() => setLikersFor_({ id: r.id, count: r.likes })}
                     />
                   ))}
+
                 </div>
               )}
             </div>
