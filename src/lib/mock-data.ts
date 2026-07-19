@@ -97,7 +97,7 @@ export const stories: MockStory[] = [
   { id: "s4", user: users[4], media: storyMedia("enzo", 2, 8) },
   { id: "s5", user: users[5], media: storyMedia("monica", 1, 12), seen: true },
 
-  { id: "s6", user: users[6] },
+  { id: "s6", user: users[6], media: storyMedia("julia", 2, 20) },
 ];
 
 export const posts: MockPost[] = [
