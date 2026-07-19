@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Send, Bookmark, Repeat2, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
@@ -17,19 +18,25 @@ export function FeedPost({
     <article className="mx-3 mb-4 overflow-hidden rounded-3xl bg-card shadow-sm">
       {/* Header */}
       <header className="flex items-center gap-3 px-4 pt-4 pb-3">
-        <img
-          src={post.user.avatar}
-          alt={post.user.username}
-          className="h-10 w-10 rounded-full object-cover"
-        />
-        <div className="min-w-0">
+        <Link to="/perfil/$username" params={{ username: post.user.username }}>
+          <img
+            src={post.user.avatar}
+            alt={post.user.username}
+            className="h-10 w-10 rounded-full object-cover"
+          />
+        </Link>
+        <Link
+          to="/perfil/$username"
+          params={{ username: post.user.username }}
+          className="min-w-0"
+        >
           <div className="truncate text-sm font-semibold text-foreground">
             {post.user.username}
           </div>
           <div className="truncate text-[11px] text-muted-foreground">
-            {post.user.city} · Público
+            {post.user.city} · {post.user.isPrivate ? "Privado" : "Público"}
           </div>
-        </div>
+        </Link>
       </header>
 
       {/* Image + right-side actions */}

@@ -13,9 +13,9 @@ function Perfil() {
     <>
       <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
         <h1 className="truncate text-lg font-semibold">{currentUser.username}</h1>
-        <button aria-label="Configurações" className="p-1">
+        <Link to="/configuracoes" aria-label="Configurações" className="p-1">
           <Settings className="h-5 w-5" />
-        </button>
+        </Link>
       </header>
 
       <section className="px-4 py-4">
