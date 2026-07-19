@@ -113,6 +113,8 @@ export function CommentsSheet({
   const [comments, setComments] = useState<Comment[]>(initial);
   const [text, setText] = useState("");
   const [replyTo, setReplyTo] = useState<{ commentId: string; username: string } | null>(null);
+  const [likersFor_, setLikersFor_] = useState<{ id: string; count: number } | null>(null);
+
 
   // reset when post changes
   useMemo(() => {
