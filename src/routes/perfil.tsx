@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Settings, Grid3x3, Bookmark, UserSquare2, Wallet } from "lucide-react";
-import { currentUser, posts, wallet } from "@/lib/mock-data";
+import { currentUser, posts, wallet, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { PostViewer } from "@/components/post-viewer";
+
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({ meta: [{ title: "Perfil — Pinguim" }] }),
@@ -9,8 +12,14 @@ export const Route = createFileRoute("/perfil")({
 });
 
 function Perfil() {
+  const gridPosts = posts.concat(posts).slice(0, 12).map((p, i) => ({ ...p, id: `${p.id}-${i}` }));
+  const [viewing, setViewing] = useState<MockPost | null>(null);
+  const [deleted, setDeleted] = useState<Set<string>>(new Set());
+  const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
+
   return (
     <>
+
       <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
         <h1 className="truncate text-lg font-semibold">{currentUser.username}</h1>
         <Link to="/configuracoes" aria-label="Configurações" className="p-1">
@@ -100,15 +109,29 @@ function Perfil() {
       </div>
 
       <div className="grid grid-cols-3 gap-[2px]">
-        {posts.concat(posts).slice(0, 12).map((p, i) => (
-          <div key={`${p.id}-${i}`} className="aspect-square overflow-hidden bg-muted">
+        {visiblePosts.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => setViewing(p)}
+            className="aspect-square overflow-hidden bg-muted"
+          >
             <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
-          </div>
+          </button>
         ))}
       </div>
+
+      <PostViewer
+        post={viewing}
+        open={!!viewing}
+        onOpenChange={(v) => !v && setViewing(null)}
+        canDelete
+        canEditWithGemini
+        onDelete={(p) => setDeleted((s) => new Set(s).add(p.id))}
+      />
     </>
   );
 }
+
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (

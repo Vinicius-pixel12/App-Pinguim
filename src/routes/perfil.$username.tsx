@@ -1,9 +1,11 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Grid3x3, Bookmark, UserSquare2, Lock, MoreHorizontal, Hand } from "lucide-react";
 import { useState } from "react";
-import { users, posts, currentUser } from "@/lib/mock-data";
+import { users, posts, currentUser, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { ConverseModal } from "@/components/converse-modal";
+import { PostViewer } from "@/components/post-viewer";
+
 
 export const Route = createFileRoute("/perfil/$username")({
   head: ({ params }) => ({ meta: [{ title: `@${params.username} — Pinguim` }] }),
@@ -31,7 +33,9 @@ function PerfilUsuario() {
   const navigate = useNavigate();
   const [following, setFollowing] = useState(false);
   const [converse, setConverse] = useState<null | typeof user>(null);
+  const [viewing, setViewing] = useState<MockPost | null>(null);
   const isPrivate = !!user.isPrivate;
+
   const canSeePosts = !isPrivate || following;
 
   const userPosts = posts.filter((p) => p.user.id === user.id).concat(posts).slice(0, 9);
@@ -103,11 +107,16 @@ function PerfilUsuario() {
       {canSeePosts ? (
         <div className="grid grid-cols-3 gap-[2px]">
           {userPosts.map((p, i) => (
-            <div key={`${p.id}-${i}`} className="aspect-square overflow-hidden bg-muted">
+            <button
+              key={`${p.id}-${i}`}
+              onClick={() => setViewing(p)}
+              className="aspect-square overflow-hidden bg-muted"
+            >
               <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
-            </div>
+            </button>
           ))}
         </div>
+
       ) : (
         <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-foreground">
@@ -126,9 +135,16 @@ function PerfilUsuario() {
         onOpenChange={(v) => !v && setConverse(null)}
       />
 
+      <PostViewer
+        post={viewing}
+        open={!!viewing}
+        onOpenChange={(v) => !v && setViewing(null)}
+      />
+
       <div className="mx-4 mt-6 mb-4 rounded-xl border border-dashed border-border p-3 text-center text-[11px] text-muted-foreground">
         Visualizando como <span className="font-medium">@{currentUser.username}</span>
       </div>
+
     </>
   );
 }
