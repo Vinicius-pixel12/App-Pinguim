@@ -9,8 +9,31 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
+function likersFor(seedId: string, count: number) {
+  if (count <= 0) return [];
+  const base = seedId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const pool = users.filter((u) => u.username !== currentUser.username);
+  const n = Math.min(count, pool.length);
+  const picked: typeof pool = [];
+  const used = new Set<number>();
+  for (let i = 0; i < n; i++) {
+    let idx = (base + i * 7) % pool.length;
+    while (used.has(idx)) idx = (idx + 1) % pool.length;
+    used.add(idx);
+    picked.push(pool[idx]);
+  }
+  return picked;
+}
+
 
 type Reply = {
   id: string;
@@ -90,6 +113,8 @@ export function CommentsSheet({
   const [comments, setComments] = useState<Comment[]>(initial);
   const [text, setText] = useState("");
   const [replyTo, setReplyTo] = useState<{ commentId: string; username: string } | null>(null);
+  const [likersFor_, setLikersFor_] = useState<{ id: string; count: number } | null>(null);
+
 
   // reset when post changes
   useMemo(() => {
@@ -195,7 +220,9 @@ export function CommentsSheet({
                 onReply={() =>
                   setReplyTo({ commentId: c.id, username: c.author.username })
                 }
+                onShowLikes={() => setLikersFor_({ id: c.id, count: c.likes })}
               />
+
               {c.replies.length > 0 && (
                 <div className="mt-3 space-y-3 pl-11">
                   {c.replies.map((r) => (
@@ -214,8 +241,10 @@ export function CommentsSheet({
                           username: r.author.username,
                         })
                       }
+                      onShowLikes={() => setLikersFor_({ id: r.id, count: r.likes })}
                     />
                   ))}
+
                 </div>
               )}
             </div>
@@ -262,9 +291,51 @@ export function CommentsSheet({
           </div>
         </div>
       </SheetContent>
+
+      <Dialog
+        open={likersFor_ !== null}
+        onOpenChange={(v) => !v && setLikersFor_(null)}
+      >
+        <DialogContent className="max-w-sm rounded-2xl p-0">
+          <DialogHeader className="border-b border-border p-4">
+            <DialogTitle className="text-center text-base font-semibold">
+              Curtidas
+            </DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[60vh] overflow-y-auto p-2">
+            {likersFor_ &&
+              likersFor(likersFor_.id, likersFor_.count).map((u) => (
+                <Link
+                  key={u.username}
+                  to="/perfil/$username"
+                  params={{ username: u.username }}
+                  onClick={() => setLikersFor_(null)}
+                  className="flex items-center gap-3 rounded-xl p-2 hover:bg-muted"
+                >
+                  <img
+                    src={u.avatar}
+                    alt={u.username}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-semibold">
+                      {u.username}
+                    </div>
+                    {u.name && (
+                      <div className="truncate text-xs text-muted-foreground">
+                        {u.name}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+              ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Sheet>
   );
 }
+
 
 function CommentRow({
   author,
@@ -275,6 +346,7 @@ function CommentRow({
   small,
   onLike,
   onReply,
+  onShowLikes,
 }: {
   author: (typeof users)[number];
   text: string;
@@ -284,6 +356,7 @@ function CommentRow({
   small?: boolean;
   onLike: () => void;
   onReply: () => void;
+  onShowLikes: () => void;
 }) {
   return (
     <div className="flex items-start gap-3">
@@ -308,15 +381,16 @@ function CommentRow({
         <div className="mt-1 flex items-center gap-4 text-[11px] text-muted-foreground">
           <span>{time}</span>
           {likes > 0 && (
-            <span>
+            <button onClick={onShowLikes} className="hover:underline">
               {likes} curtida{likes === 1 ? "" : "s"}
-            </span>
+            </button>
           )}
           <button onClick={onReply} className="font-semibold">
             Responder
           </button>
         </div>
       </div>
+
       <button onClick={onLike} className="mt-1 shrink-0 p-1">
         <Heart
           className={`h-4 w-4 ${liked ? "text-destructive" : "text-muted-foreground"}`}
