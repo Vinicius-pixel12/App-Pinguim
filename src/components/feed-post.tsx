@@ -108,7 +108,10 @@ export function FeedPost({
           <span>{post.caption}</span>
         </p>
         {post.comments > 0 && (
-          <button className="text-sm text-muted-foreground">
+          <button
+            onClick={() => setCommentsOpen(true)}
+            className="text-sm text-muted-foreground"
+          >
             Ver todos os {post.comments} comentários
           </button>
         )}
@@ -116,6 +119,12 @@ export function FeedPost({
           {post.date}
         </div>
       </div>
+
+      <CommentsSheet
+        post={post}
+        open={commentsOpen}
+        onOpenChange={setCommentsOpen}
+      />
     </article>
   );
 }
