@@ -1,5 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { PlusSquare, Heart, Send } from "lucide-react";
+import { Settings, PlusSquare, Heart, Send } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function TopBar() {
   return (
@@ -8,17 +14,34 @@ export function TopBar() {
         <Link to="/" className="font-brand text-3xl leading-none text-foreground">
           Pinguim
         </Link>
-        <div className="flex items-center gap-4 text-foreground">
-          <button aria-label="Nova publicação" className="p-1">
-            <PlusSquare className="h-6 w-6" strokeWidth={1.75} />
-          </button>
-          <Link to="/notificacoes" aria-label="Notificações" className="p-1">
-            <Heart className="h-6 w-6" strokeWidth={1.75} />
-          </Link>
-          <Link to="/conversas" aria-label="Mensagens" className="p-1">
-            <Send className="h-6 w-6" strokeWidth={1.75} />
-          </Link>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            aria-label="Configurações"
+            className="rounded-full p-1 text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            <Settings className="h-6 w-6" strokeWidth={1.75} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuItem asChild>
+              <button className="flex w-full items-center gap-2">
+                <PlusSquare className="h-4 w-4" />
+                Nova publicação
+              </button>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/notificacoes" className="flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                Notificações
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to="/conversas" className="flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                Mensagens
+              </Link>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );
