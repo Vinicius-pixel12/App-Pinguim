@@ -12,8 +12,14 @@ export const Route = createFileRoute("/perfil")({
 });
 
 function Perfil() {
+  const gridPosts = posts.concat(posts).slice(0, 12).map((p, i) => ({ ...p, id: `${p.id}-${i}` }));
+  const [viewing, setViewing] = useState<MockPost | null>(null);
+  const [deleted, setDeleted] = useState<Set<string>>(new Set());
+  const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
+
   return (
     <>
+
       <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
         <h1 className="truncate text-lg font-semibold">{currentUser.username}</h1>
         <Link to="/configuracoes" aria-label="Configurações" className="p-1">
