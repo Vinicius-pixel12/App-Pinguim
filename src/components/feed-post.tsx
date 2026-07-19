@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Send, Bookmark, Repeat2, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { CommentsSheet } from "@/components/comments-sheet";
 
 export function FeedPost({
   post,
@@ -13,6 +14,7 @@ export function FeedPost({
 }) {
   const [liked, setLiked] = useState(!!post.liked);
   const [saved, setSaved] = useState(!!post.saved);
+  const [commentsOpen, setCommentsOpen] = useState(false);
 
   return (
     <article className="mx-3 mb-4 overflow-hidden rounded-3xl bg-card shadow-sm">
@@ -62,7 +64,7 @@ export function FeedPost({
                 strokeWidth={1.75}
               />
             </IconBtn>
-            <IconBtn aria-label="Comentar">
+            <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
               <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
             <IconBtn aria-label="Enviar">
@@ -106,7 +108,10 @@ export function FeedPost({
           <span>{post.caption}</span>
         </p>
         {post.comments > 0 && (
-          <button className="text-sm text-muted-foreground">
+          <button
+            onClick={() => setCommentsOpen(true)}
+            className="text-sm text-muted-foreground"
+          >
             Ver todos os {post.comments} comentários
           </button>
         )}
@@ -114,6 +119,12 @@ export function FeedPost({
           {post.date}
         </div>
       </div>
+
+      <CommentsSheet
+        post={post}
+        open={commentsOpen}
+        onOpenChange={setCommentsOpen}
+      />
     </article>
   );
 }
