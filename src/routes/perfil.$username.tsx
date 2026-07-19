@@ -135,9 +135,16 @@ function PerfilUsuario() {
         onOpenChange={(v) => !v && setConverse(null)}
       />
 
+      <PostViewer
+        post={viewing}
+        open={!!viewing}
+        onOpenChange={(v) => !v && setViewing(null)}
+      />
+
       <div className="mx-4 mt-6 mb-4 rounded-xl border border-dashed border-border p-3 text-center text-[11px] text-muted-foreground">
         Visualizando como <span className="font-medium">@{currentUser.username}</span>
       </div>
+
     </>
   );
 }
