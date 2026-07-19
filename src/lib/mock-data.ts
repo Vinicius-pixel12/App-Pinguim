@@ -24,12 +24,21 @@ export type MockPost = {
   saved?: boolean;
 };
 
+export type StoryMedia = {
+  id: string;
+  image: string;
+  createdAt: number; // ms epoch
+  caption?: string;
+};
+
 export type MockStory = {
   id: string;
   user: MockUser;
   isOwn?: boolean;
   seen?: boolean;
+  media: StoryMedia[];
 };
+
 
 export type ConversationRequest = {
   id: string;
