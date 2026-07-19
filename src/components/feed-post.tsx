@@ -2,8 +2,31 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Send, Bookmark, Repeat2, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
+import { users, currentUser } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+function likersFor(seedId: string, count: number) {
+  if (count <= 0) return [];
+  const base = seedId.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  const pool = users.filter((u) => u.username !== currentUser.username);
+  const n = Math.min(count, pool.length);
+  const picked: typeof pool = [];
+  const used = new Set<number>();
+  for (let i = 0; i < n; i++) {
+    let idx = (base + i * 7) % pool.length;
+    while (used.has(idx)) idx = (idx + 1) % pool.length;
+    used.add(idx);
+    picked.push(pool[idx]);
+  }
+  return picked;
+}
 
 export function FeedPost({
   post,
@@ -15,6 +38,9 @@ export function FeedPost({
   const [liked, setLiked] = useState(!!post.liked);
   const [saved, setSaved] = useState(!!post.saved);
   const [commentsOpen, setCommentsOpen] = useState(false);
+  const [likesOpen, setLikesOpen] = useState(false);
+  const likeCount = post.likes + (liked && !post.liked ? 1 : 0) + (!liked && post.liked ? -1 : 0);
+
 
   return (
     <article className="mx-3 mb-4 overflow-hidden rounded-3xl bg-card shadow-sm">
