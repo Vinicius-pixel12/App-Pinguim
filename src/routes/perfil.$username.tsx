@@ -123,9 +123,7 @@ function PerfilUsuario() {
       <ConverseModal
         open={!!converse}
         user={converse}
-        onClose={() => setConverse(null)}
-        onConfirm={() => setConverse(null)}
-        currentBalance={0}
+        onOpenChange={(v) => !v && setConverse(null)}
       />
 
       <div className="mx-4 mt-6 mb-4 rounded-xl border border-dashed border-border p-3 text-center text-[11px] text-muted-foreground">
