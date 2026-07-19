@@ -54,6 +54,27 @@ function Perfil() {
         </div>
       </section>
 
+      {/* Preview como visitante */}
+      <section className="mx-4 mb-4 rounded-xl border border-dashed border-border bg-card p-3">
+        <div className="mb-2 text-xs font-medium text-muted-foreground">
+          Pré-visualizar como visitante
+        </div>
+        <div className="flex gap-2">
+          <Link to="/perfil/$username" params={{ username: "maria.oliveira" }} className="flex-1">
+            <Button variant="secondary" size="sm" className="w-full justify-start gap-2">
+              <img src="https://i.pravatar.cc/60?u=maria" alt="" className="h-5 w-5 rounded-full" />
+              <span className="truncate">Perfil público</span>
+            </Button>
+          </Link>
+          <Link to="/perfil/$username" params={{ username: "lil_lapisla" }} className="flex-1">
+            <Button variant="secondary" size="sm" className="w-full justify-start gap-2">
+              <img src="https://i.pravatar.cc/60?u=luiza" alt="" className="h-5 w-5 rounded-full" />
+              <span className="truncate">Perfil privado</span>
+            </Button>
+          </Link>
+        </div>
+      </section>
+
       {/* Wallet quick card */}
       <section className="mx-4 mb-4 rounded-xl border border-border bg-card p-4">
         <div className="flex items-center justify-between">
