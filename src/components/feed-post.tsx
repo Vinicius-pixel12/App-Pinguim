@@ -89,7 +89,7 @@ export function FeedPost({
       <div className="px-3 pt-3 pb-3">
         <Button
           onClick={() => onRequestConverse(post.user)}
-          className="w-full gap-2 rounded-2xl bg-gradient-to-r from-primary to-[oklch(0.55_0.22_340)] py-6 text-base font-semibold text-primary-foreground hover:opacity-95"
+          className="w-full gap-2 rounded-2xl bg-gradient-to-r from-[oklch(0.65_0.18_145)] via-[oklch(0.75_0.22_105)] to-[oklch(0.82_0.18_95)] py-6 text-base font-semibold text-white hover:opacity-95"
         >
           <Hand className="h-5 w-5" />
           Iniciar Conversa (R$ 4,97)
