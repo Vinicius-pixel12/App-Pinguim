@@ -126,9 +126,13 @@ export function FeedPost({
 
       {/* Counts + caption */}
       <div className="space-y-1 px-4 pb-4">
-        <div className="text-sm font-semibold text-foreground">
-          {post.likes.toLocaleString("pt-BR")} curtidas
-        </div>
+        <button
+          onClick={() => setLikesOpen(true)}
+          className="text-sm font-semibold text-foreground hover:underline"
+        >
+          {likeCount.toLocaleString("pt-BR")} curtidas
+        </button>
+
         <p className="text-sm text-foreground">
           <span className="font-semibold">{post.user.username}</span>{" "}
           <span>{post.caption}</span>
