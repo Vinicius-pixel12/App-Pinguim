@@ -1,9 +1,11 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Grid3x3, Bookmark, UserSquare2, Lock, MoreHorizontal, Hand } from "lucide-react";
 import { useState } from "react";
-import { users, posts, currentUser } from "@/lib/mock-data";
+import { users, posts, currentUser, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { ConverseModal } from "@/components/converse-modal";
+import { PostViewer } from "@/components/post-viewer";
+
 
 export const Route = createFileRoute("/perfil/$username")({
   head: ({ params }) => ({ meta: [{ title: `@${params.username} — Pinguim` }] }),
