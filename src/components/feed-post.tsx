@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Heart, MessageCircle, Send, Bookmark, Repeat2, Hand } from "lucide-react";
+import { Heart, MessageCircle, Send, Bookmark, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import { users, currentUser } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
+import { GeminiIcon } from "@/components/gemini-icon";
+import { openGeminiWithImage } from "@/lib/gemini";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +42,8 @@ export function FeedPost({
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [likesOpen, setLikesOpen] = useState(false);
   const likeCount = post.likes + (liked && !post.liked ? 1 : 0) + (!liked && post.liked ? -1 : 0);
+  const isOwn = post.user.username === currentUser.username;
+
 
 
   return (
@@ -75,14 +79,21 @@ export function FeedPost({
           className="h-full w-full object-cover"
           loading="lazy"
           onDoubleClick={() => setLiked(true)}
+          onClick={isOwn ? () => openGeminiWithImage(post.image) : undefined}
+          style={isOwn ? { cursor: "pointer" } : undefined}
         />
 
         {/* Vertical action rail */}
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
           <div className="flex flex-col items-center gap-4 rounded-2xl bg-card/95 px-2 py-3 shadow-md backdrop-blur">
-            <IconBtn aria-label="Compartilhar publicação">
-              <Repeat2 className="h-6 w-6 text-foreground" strokeWidth={1.75} />
-            </IconBtn>
+            {isOwn && (
+              <IconBtn
+                aria-label="Editar no Gemini"
+                onClick={() => openGeminiWithImage(post.image)}
+              >
+                <GeminiIcon className="h-6 w-6" size={24} />
+              </IconBtn>
+            )}
             <IconBtn aria-label="Curtir" onClick={() => setLiked((v) => !v)}>
               <Heart
                 className={`h-6 w-6 ${liked ? "text-destructive" : "text-foreground"}`}
