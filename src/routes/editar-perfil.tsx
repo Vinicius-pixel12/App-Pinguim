@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Camera, Check, ShieldCheck, Lock, X, Plus } from "lucide-react";
+import { ArrowLeft, Camera, Check, ShieldCheck, Lock, X, Plus, Image as ImageIcon } from "lucide-react";
 import { useRef, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
