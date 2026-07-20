@@ -47,17 +47,29 @@ function Perfil() {
       </header>
 
       <section className="px-4 py-4">
-        <div className="flex items-center gap-5">
+        <div className="flex flex-col items-center text-center">
           <div className="rounded-full story-ring">
             <div className="rounded-full bg-background p-[2px]">
               <img
                 src={profile.avatar}
                 alt=""
-                className="h-20 w-20 rounded-full object-cover"
+                className="h-24 w-24 rounded-full object-cover"
               />
             </div>
           </div>
-          <div className="grid flex-1 grid-cols-3 gap-2 text-center">
+          <div className="mt-3 flex items-center justify-center gap-1 text-base font-semibold text-foreground">
+            {profile.displayName}{profile.age ? `, ${profile.age}` : ""}
+            {verified && <BadgeCheck className="h-4 w-4 text-primary" />}
+          </div>
+          <div className="text-xs text-muted-foreground">@{profile.username}</div>
+          {[profile.city, profile.state].filter(Boolean).length > 0 && (
+            <div className="mt-0.5 text-sm text-muted-foreground">
+              {[profile.city, profile.state].filter(Boolean).join(", ")}
+            </div>
+          )}
+          {profile.bio && <p className="mt-1 max-w-xs text-sm">{profile.bio}</p>}
+
+          <div className="mt-4 grid w-full max-w-xs grid-cols-3 gap-2 text-center">
             <Stat label="Publicações" value={String(visiblePosts.length)} />
             <Stat
               label="Seguidores"
@@ -70,17 +82,6 @@ function Perfil() {
               onClick={() => setListOpen("following")}
             />
           </div>
-        </div>
-
-        <div className="mt-3">
-          <div className="font-semibold text-foreground flex items-center gap-1">
-            {profile.displayName}{profile.age ? `, ${profile.age}` : ""}
-            {verified && <BadgeCheck className="h-4 w-4 text-primary" />}
-          </div>
-          <div className="text-sm text-muted-foreground">
-            {[profile.city, profile.state].filter(Boolean).join(", ")}
-          </div>
-          {profile.bio && <p className="mt-1 text-sm">{profile.bio}</p>}
         </div>
 
         <div className="mt-4 flex gap-2">
