@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { useProfile, type ProfileData } from "@/lib/profile";
+import { users as mockUsers } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/editar-perfil")({
   head: () => ({ meta: [{ title: "Editar perfil — Pinguim" }] }),
@@ -57,11 +58,31 @@ function EditarPerfil() {
     setNewBlock("");
   };
 
+  const usernameNormalized = form.username.trim().toLowerCase().replace(/^@/, "");
+  const usernameTaken =
+    usernameNormalized.length > 0 &&
+    usernameNormalized !== saved.username.toLowerCase() &&
+    mockUsers.some((u) => u.username.toLowerCase() === usernameNormalized);
+  const usernameValid = /^[a-z0-9._]{3,20}$/.test(usernameNormalized);
+
   const save = () => {
-    setProfile(form);
+    if (!usernameNormalized) {
+      toast.error("Informe um nome de usuário");
+      return;
+    }
+    if (!usernameValid) {
+      toast.error("Use 3–20 caracteres: letras minúsculas, números, . ou _");
+      return;
+    }
+    if (usernameTaken) {
+      toast.error("Este nome de usuário já está em uso");
+      return;
+    }
+    setProfile({ ...form, username: usernameNormalized });
     toast.success("Perfil atualizado");
     navigate({ to: "/perfil" });
   };
+
 
   const verified = form.selfieVerified && form.documentVerified;
 
@@ -143,14 +164,31 @@ function EditarPerfil() {
             <Input value={form.displayName} onChange={(e) => set("displayName", e.target.value)} />
           </Field>
           <Field label="Nome de usuário">
-            <div className="flex items-center rounded-md border border-input bg-background">
+            <div
+              className={`flex items-center rounded-md border bg-background ${
+                usernameNormalized && (usernameTaken || !usernameValid)
+                  ? "border-destructive"
+                  : "border-input"
+              }`}
+            >
               <span className="pl-3 text-muted-foreground">@</span>
               <Input
                 className="border-0 focus-visible:ring-0"
                 value={form.username}
-                onChange={(e) => set("username", e.target.value.replace(/^@/, ""))}
+                onChange={(e) => set("username", e.target.value.replace(/^@/, "").toLowerCase())}
               />
             </div>
+            {usernameNormalized && !usernameValid && (
+              <p className="text-[11px] text-destructive">
+                Use 3–20 caracteres: letras minúsculas, números, ponto ou _
+              </p>
+            )}
+            {usernameNormalized && usernameValid && usernameTaken && (
+              <p className="text-[11px] text-destructive">Este nome de usuário já está em uso</p>
+            )}
+            {usernameNormalized && usernameValid && !usernameTaken && (
+              <p className="text-[11px] text-success">Disponível</p>
+            )}
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Idade">
