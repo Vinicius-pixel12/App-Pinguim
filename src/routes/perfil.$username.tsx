@@ -65,17 +65,25 @@ function PerfilUsuario() {
       </header>
 
       <section className="px-4 py-4">
-        <div className="flex items-center gap-5">
+        <div className="flex flex-col items-center text-center">
           <div className="rounded-full story-ring">
             <div className="rounded-full bg-background p-[2px]">
               <img
                 src={user.avatar}
                 alt=""
-                className="h-20 w-20 rounded-full object-cover"
+                className="h-24 w-24 rounded-full object-cover"
               />
             </div>
           </div>
-          <div className="grid flex-1 grid-cols-3 gap-2 text-center">
+          <div className="mt-3 flex items-center justify-center gap-2 text-base font-semibold text-foreground">
+            {user.name}, {user.age}
+            {isPrivate && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
+          </div>
+          <div className="text-xs text-muted-foreground">@{user.username}</div>
+          {user.city && <div className="mt-0.5 text-sm text-muted-foreground">{user.city}</div>}
+          {user.bio && <p className="mt-1 max-w-xs text-sm">{user.bio}</p>}
+
+          <div className="mt-4 grid w-full max-w-xs grid-cols-3 gap-2 text-center">
             <Stat label="Publicações" value={String(totalPosts)} />
             <Stat
               label="Seguidores"
@@ -88,15 +96,6 @@ function PerfilUsuario() {
               onClick={() => setListOpen("following")}
             />
           </div>
-        </div>
-
-        <div className="mt-3">
-          <div className="flex items-center gap-2 font-semibold text-foreground">
-            {user.name}, {user.age}
-            {isPrivate && <Lock className="h-3.5 w-3.5 text-muted-foreground" />}
-          </div>
-          <div className="text-sm text-muted-foreground">{user.city}</div>
-          {user.bio && <p className="mt-1 text-sm">{user.bio}</p>}
         </div>
 
         <div className="mt-4 flex gap-2">
