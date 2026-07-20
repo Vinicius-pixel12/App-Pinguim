@@ -4,6 +4,7 @@ import { Settings, Grid3x3, Bookmark, UserSquare2, Wallet, BadgeCheck } from "lu
 import { posts, wallet, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { PostViewer } from "@/components/post-viewer";
+import { ShareProfileDialog } from "@/components/share-profile-dialog";
 import { useProfile } from "@/lib/profile";
 
 
@@ -16,6 +17,7 @@ function Perfil() {
   const gridPosts = posts.concat(posts).slice(0, 12).map((p, i) => ({ ...p, id: `${p.id}-${i}` }));
   const [viewing, setViewing] = useState<MockPost | null>(null);
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
+  const [shareOpen, setShareOpen] = useState(false);
   const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
   const [profile] = useProfile();
   const verified = profile.selfieVerified && profile.documentVerified;
@@ -69,11 +71,18 @@ function Perfil() {
               Editar perfil
             </Button>
           </Link>
-          <Button variant="secondary" className="flex-1">
+          <Button variant="secondary" className="flex-1" onClick={() => setShareOpen(true)}>
             Compartilhar
           </Button>
         </div>
       </section>
+
+      <ShareProfileDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        username={profile.username}
+        displayName={profile.displayName}
+      />
 
 
       {/* Preview como visitante */}
