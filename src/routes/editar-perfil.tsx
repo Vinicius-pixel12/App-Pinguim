@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { useProfile, type ProfileData } from "@/lib/profile";
+import { users as mockUsers } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/editar-perfil")({
   head: () => ({ meta: [{ title: "Editar perfil — Pinguim" }] }),
