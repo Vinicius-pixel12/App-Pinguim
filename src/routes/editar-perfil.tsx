@@ -58,11 +58,31 @@ function EditarPerfil() {
     setNewBlock("");
   };
 
+  const usernameNormalized = form.username.trim().toLowerCase().replace(/^@/, "");
+  const usernameTaken =
+    usernameNormalized.length > 0 &&
+    usernameNormalized !== saved.username.toLowerCase() &&
+    mockUsers.some((u) => u.username.toLowerCase() === usernameNormalized);
+  const usernameValid = /^[a-z0-9._]{3,20}$/.test(usernameNormalized);
+
   const save = () => {
-    setProfile(form);
+    if (!usernameNormalized) {
+      toast.error("Informe um nome de usuário");
+      return;
+    }
+    if (!usernameValid) {
+      toast.error("Use 3–20 caracteres: letras minúsculas, números, . ou _");
+      return;
+    }
+    if (usernameTaken) {
+      toast.error("Este nome de usuário já está em uso");
+      return;
+    }
+    setProfile({ ...form, username: usernameNormalized });
     toast.success("Perfil atualizado");
     navigate({ to: "/perfil" });
   };
+
 
   const verified = form.selfieVerified && form.documentVerified;
 
