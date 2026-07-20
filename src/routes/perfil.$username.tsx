@@ -1,11 +1,12 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Grid3x3, Bookmark, UserSquare2, Lock, MoreHorizontal, Hand } from "lucide-react";
+import { ArrowLeft, Grid3x3, Bookmark, UserSquare2, Lock, MoreHorizontal, Hand, UserPlus, UserCheck } from "lucide-react";
 import { useState } from "react";
 import { users, posts, currentUser, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { ConverseModal } from "@/components/converse-modal";
 import { PostViewer } from "@/components/post-viewer";
-
+import { UsersListDialog } from "@/components/users-list-dialog";
+import { ProfileMediaGrid } from "@/components/profile-media-grid";
 
 export const Route = createFileRoute("/perfil/$username")({
   head: ({ params }) => ({ meta: [{ title: `@${params.username} — Pinguim` }] }),
@@ -34,11 +35,22 @@ function PerfilUsuario() {
   const [following, setFollowing] = useState(false);
   const [converse, setConverse] = useState<null | typeof user>(null);
   const [viewing, setViewing] = useState<MockPost | null>(null);
+  const [listOpen, setListOpen] = useState<null | "followers" | "following">(null);
   const isPrivate = !!user.isPrivate;
 
   const canSeePosts = !isPrivate || following;
 
-  const userPosts = posts.filter((p) => p.user.id === user.id).concat(posts).slice(0, 9);
+  const totalPosts = user.posts ?? 0;
+  const userPosts: MockPost[] = Array.from({ length: totalPosts }).map((_, i) => {
+    const base = posts[i % posts.length];
+    return {
+      ...base,
+      id: `${user.id}-grid-${i}`,
+      user,
+      image: `https://picsum.photos/seed/${user.id}-grid-${i}/900/900`,
+      kind: i % 5 === 4 ? "video" : "photo",
+    };
+  });
 
   return (
     <>
@@ -64,9 +76,17 @@ function PerfilUsuario() {
             </div>
           </div>
           <div className="grid flex-1 grid-cols-3 gap-2 text-center">
-            <Stat label="Publicações" value={String(user.posts ?? 0)} />
-            <Stat label="Seguidores" value={String(user.followers ?? 0)} />
-            <Stat label="Seguindo" value={String(user.following ?? 0)} />
+            <Stat label="Publicações" value={String(totalPosts)} />
+            <Stat
+              label="Seguidores"
+              value={String(user.followers ?? 0)}
+              onClick={() => setListOpen("followers")}
+            />
+            <Stat
+              label="Seguindo"
+              value={String(user.following ?? 0)}
+              onClick={() => setListOpen("following")}
+            />
           </div>
         </div>
 
@@ -81,19 +101,28 @@ function PerfilUsuario() {
 
         <div className="mt-4 flex gap-2">
           <Button
-            variant={following ? "secondary" : "default"}
-            className="flex-1"
-            onClick={() => setFollowing((v) => !v)}
-          >
-            {following ? (isPrivate ? "Seguindo" : "Seguindo") : isPrivate ? "Solicitar" : "Seguir"}
-          </Button>
-          <Button
-            variant="secondary"
             className="flex-1 gap-2"
             onClick={() => setConverse(user)}
           >
             <Hand className="h-4 w-4" />
             Conversar
+          </Button>
+          <Button
+            variant={following ? "secondary" : "default"}
+            className="flex-1 gap-2"
+            onClick={() => setFollowing((v) => !v)}
+          >
+            {following ? (
+              <>
+                <UserCheck className="h-4 w-4" />
+                {isPrivate ? "Solicitado" : "Adicionado"}
+              </>
+            ) : (
+              <>
+                <UserPlus className="h-4 w-4" />
+                Adicionar
+              </>
+            )}
           </Button>
         </div>
       </section>
@@ -105,18 +134,7 @@ function PerfilUsuario() {
       </div>
 
       {canSeePosts ? (
-        <div className="grid grid-cols-3 gap-[2px]">
-          {userPosts.map((p, i) => (
-            <button
-              key={`${p.id}-${i}`}
-              onClick={() => setViewing(p)}
-              className="aspect-square overflow-hidden bg-muted"
-            >
-              <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
-            </button>
-          ))}
-        </div>
-
+        <ProfileMediaGrid posts={userPosts} onOpen={setViewing} />
       ) : (
         <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-foreground">
@@ -141,21 +159,43 @@ function PerfilUsuario() {
         onOpenChange={(v) => !v && setViewing(null)}
       />
 
+      <UsersListDialog
+        open={listOpen === "followers"}
+        onOpenChange={(v) => !v && setListOpen(null)}
+        title="Seguidores"
+        seed={`${user.id}-followers`}
+        count={user.followers ?? 0}
+      />
+      <UsersListDialog
+        open={listOpen === "following"}
+        onOpenChange={(v) => !v && setListOpen(null)}
+        title="Seguindo"
+        seed={`${user.id}-following`}
+        count={user.following ?? 0}
+      />
+
       <div className="mx-4 mt-6 mb-4 rounded-xl border border-dashed border-border p-3 text-center text-[11px] text-muted-foreground">
         Visualizando como <span className="font-medium">@{currentUser.username}</span>
       </div>
-
     </>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
+function Stat({ label, value, onClick }: { label: string; value: string; onClick?: () => void }) {
+  const inner = (
+    <>
       <div className="text-lg font-bold text-foreground">{value}</div>
       <div className="text-xs text-muted-foreground">{label}</div>
-    </div>
+    </>
   );
+  if (onClick) {
+    return (
+      <button onClick={onClick} className="text-center hover:opacity-80">
+        {inner}
+      </button>
+    );
+  }
+  return <div>{inner}</div>;
 }
 
 function TabBtn({ active, icon }: { active?: boolean; icon: React.ReactNode }) {

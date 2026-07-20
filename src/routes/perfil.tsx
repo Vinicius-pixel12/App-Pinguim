@@ -1,31 +1,41 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Settings, Grid3x3, Bookmark, UserSquare2, Wallet, BadgeCheck } from "lucide-react";
-import { posts, wallet, type MockPost } from "@/lib/mock-data";
+import { posts, wallet, currentUser, type MockPost } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { PostViewer } from "@/components/post-viewer";
 import { ShareProfileDialog } from "@/components/share-profile-dialog";
+import { UsersListDialog } from "@/components/users-list-dialog";
+import { ProfileMediaGrid } from "@/components/profile-media-grid";
 import { useProfile } from "@/lib/profile";
-
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({ meta: [{ title: "Perfil — Pinguim" }] }),
   component: Perfil,
 });
 
+const OWN_FOLLOWERS = 248;
+const OWN_FOLLOWING = 180;
+
 function Perfil() {
-  const gridPosts = posts.concat(posts).slice(0, 12).map((p, i) => ({ ...p, id: `${p.id}-${i}` }));
+  const gridPosts: MockPost[] = posts
+    .concat(posts)
+    .slice(0, 12)
+    .map((p, i) => ({
+      ...p,
+      id: `${p.id}-${i}`,
+      kind: i % 4 === 3 ? "video" : "photo",
+    }));
   const [viewing, setViewing] = useState<MockPost | null>(null);
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const [shareOpen, setShareOpen] = useState(false);
+  const [listOpen, setListOpen] = useState<null | "followers" | "following">(null);
   const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
   const [profile] = useProfile();
   const verified = profile.selfieVerified && profile.documentVerified;
 
-
   return (
     <>
-
       <header className="sticky top-0 z-30 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
         <h1 className="truncate text-lg font-semibold flex items-center gap-1">
           {profile.username}
@@ -48,9 +58,17 @@ function Perfil() {
             </div>
           </div>
           <div className="grid flex-1 grid-cols-3 gap-2 text-center">
-            <Stat label="Publicações" value="12" />
-            <Stat label="Seguidores" value="248" />
-            <Stat label="Seguindo" value="180" />
+            <Stat label="Publicações" value={String(visiblePosts.length)} />
+            <Stat
+              label="Seguidores"
+              value={String(OWN_FOLLOWERS)}
+              onClick={() => setListOpen("followers")}
+            />
+            <Stat
+              label="Seguindo"
+              value={String(OWN_FOLLOWING)}
+              onClick={() => setListOpen("following")}
+            />
           </div>
         </div>
 
@@ -84,6 +102,20 @@ function Perfil() {
         displayName={profile.displayName}
       />
 
+      <UsersListDialog
+        open={listOpen === "followers"}
+        onOpenChange={(v) => !v && setListOpen(null)}
+        title="Seguidores"
+        seed={`${currentUser.id}-followers`}
+        count={OWN_FOLLOWERS}
+      />
+      <UsersListDialog
+        open={listOpen === "following"}
+        onOpenChange={(v) => !v && setListOpen(null)}
+        title="Seguindo"
+        seed={`${currentUser.id}-following`}
+        count={OWN_FOLLOWING}
+      />
 
       {/* Preview como visitante */}
       <section className="mx-4 mb-4 rounded-xl border border-dashed border-border bg-card p-3">
@@ -130,17 +162,7 @@ function Perfil() {
         <TabBtn icon={<UserSquare2 className="h-5 w-5" />} />
       </div>
 
-      <div className="grid grid-cols-3 gap-[2px]">
-        {visiblePosts.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setViewing(p)}
-            className="aspect-square overflow-hidden bg-muted"
-          >
-            <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
-          </button>
-        ))}
-      </div>
+      <ProfileMediaGrid posts={visiblePosts} onOpen={setViewing} />
 
       <PostViewer
         post={viewing}
@@ -154,14 +176,21 @@ function Perfil() {
   );
 }
 
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
+function Stat({ label, value, onClick }: { label: string; value: string; onClick?: () => void }) {
+  const inner = (
+    <>
       <div className="text-lg font-bold text-foreground">{value}</div>
       <div className="text-xs text-muted-foreground">{label}</div>
-    </div>
+    </>
   );
+  if (onClick) {
+    return (
+      <button onClick={onClick} className="text-center hover:opacity-80">
+        {inner}
+      </button>
+    );
+  }
+  return <div>{inner}</div>;
 }
 
 function TabBtn({ active, icon }: { active?: boolean; icon: React.ReactNode }) {
