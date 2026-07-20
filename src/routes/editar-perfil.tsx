@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, Camera, Check, ShieldCheck, Lock, X, Plus } from "lucide-react";
+import { ArrowLeft, Camera, Check, ShieldCheck, Lock, X, Plus, Image as ImageIcon } from "lucide-react";
 import { useRef, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,9 @@ function EditarPerfil() {
   const [saved, setProfile] = useProfile();
   const [form, setForm] = useState<ProfileData>(saved);
   const [newBlock, setNewBlock] = useState("");
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const selfieRef = useRef<HTMLInputElement>(null);
   const docRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -76,26 +79,64 @@ function EditarPerfil() {
         {/* Foto */}
         <div className="flex flex-col items-center gap-2">
           <div className="relative">
+          <button
+            type="button"
+            onClick={() => setAvatarPickerOpen(true)}
+            className="relative block"
+            aria-label="Trocar foto de perfil"
+          >
             <img src={form.avatar} alt="" className="h-24 w-24 rounded-full object-cover" />
-            <button
-              onClick={() => fileRef.current?.click()}
+            <span
               className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow"
-              aria-label="Trocar foto"
+              aria-hidden
             >
               <Camera className="h-4 w-4" />
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => e.target.files?.[0] && onAvatar(e.target.files[0])}
-            />
+            </span>
+          </button>
+          <input
+            ref={galleryRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) onAvatar(f); e.target.value = ""; }}
+          />
+          <input
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="user"
+            className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) onAvatar(f); e.target.value = ""; }}
+          />
           </div>
-          <button onClick={() => fileRef.current?.click()} className="text-sm font-medium text-primary">
+          <button onClick={() => setAvatarPickerOpen(true)} className="text-sm font-medium text-primary">
             Alterar foto de perfil
           </button>
         </div>
+
+        <Dialog open={avatarPickerOpen} onOpenChange={setAvatarPickerOpen}>
+          <DialogContent className="max-w-xs">
+            <DialogHeader>
+              <DialogTitle>Foto de perfil</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-2">
+              <Button
+                variant="secondary"
+                className="justify-start"
+                onClick={() => { setAvatarPickerOpen(false); cameraRef.current?.click(); }}
+              >
+                <Camera className="mr-2 h-4 w-4" /> Tirar foto
+              </Button>
+              <Button
+                variant="secondary"
+                className="justify-start"
+                onClick={() => { setAvatarPickerOpen(false); galleryRef.current?.click(); }}
+              >
+                <ImageIcon className="mr-2 h-4 w-4" /> Escolher da galeria
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         <Section title="Informações básicas">
           <Field label="Nome de exibição">
