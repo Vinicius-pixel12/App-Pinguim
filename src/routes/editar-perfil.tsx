@@ -22,7 +22,9 @@ function EditarPerfil() {
   const [saved, setProfile] = useProfile();
   const [form, setForm] = useState<ProfileData>(saved);
   const [newBlock, setNewBlock] = useState("");
-  const fileRef = useRef<HTMLInputElement>(null);
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
   const selfieRef = useRef<HTMLInputElement>(null);
   const docRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
