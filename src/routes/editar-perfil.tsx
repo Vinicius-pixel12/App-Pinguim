@@ -164,14 +164,31 @@ function EditarPerfil() {
             <Input value={form.displayName} onChange={(e) => set("displayName", e.target.value)} />
           </Field>
           <Field label="Nome de usuário">
-            <div className="flex items-center rounded-md border border-input bg-background">
+            <div
+              className={`flex items-center rounded-md border bg-background ${
+                usernameNormalized && (usernameTaken || !usernameValid)
+                  ? "border-destructive"
+                  : "border-input"
+              }`}
+            >
               <span className="pl-3 text-muted-foreground">@</span>
               <Input
                 className="border-0 focus-visible:ring-0"
                 value={form.username}
-                onChange={(e) => set("username", e.target.value.replace(/^@/, ""))}
+                onChange={(e) => set("username", e.target.value.replace(/^@/, "").toLowerCase())}
               />
             </div>
+            {usernameNormalized && !usernameValid && (
+              <p className="text-[11px] text-destructive">
+                Use 3–20 caracteres: letras minúsculas, números, ponto ou _
+              </p>
+            )}
+            {usernameNormalized && usernameValid && usernameTaken && (
+              <p className="text-[11px] text-destructive">Este nome de usuário já está em uso</p>
+            )}
+            {usernameNormalized && usernameValid && !usernameTaken && (
+              <p className="text-[11px] text-success">Disponível</p>
+            )}
           </Field>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Idade">
