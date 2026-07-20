@@ -22,6 +22,7 @@ export type MockPost = {
   date: string;
   liked?: boolean;
   saved?: boolean;
+  kind?: "photo" | "video";
 };
 
 export type StoryMedia = {
