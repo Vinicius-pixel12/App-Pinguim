@@ -8,6 +8,7 @@ import { ShareProfileDialog } from "@/components/share-profile-dialog";
 import { UsersListDialog } from "@/components/users-list-dialog";
 import { ProfileMediaGrid } from "@/components/profile-media-grid";
 import { useProfile } from "@/lib/profile";
+import { useSavedPosts, togglePostSaved } from "@/lib/saved-posts";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({ meta: [{ title: "Perfil — Pinguim" }] }),
@@ -30,7 +31,9 @@ function Perfil() {
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const [shareOpen, setShareOpen] = useState(false);
   const [listOpen, setListOpen] = useState<null | "followers" | "following">(null);
+  const [tab, setTab] = useState<"grid" | "saved" | "tagged">("grid");
   const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
+  const savedPosts = useSavedPosts();
   const [profile] = useProfile();
   const verified = profile.selfieVerified && profile.documentVerified;
 
@@ -158,20 +161,51 @@ function Perfil() {
 
       {/* Tabs */}
       <div className="grid grid-cols-3 border-y border-border">
-        <TabBtn active icon={<Grid3x3 className="h-5 w-5" />} />
-        <TabBtn icon={<Bookmark className="h-5 w-5" />} />
-        <TabBtn icon={<UserSquare2 className="h-5 w-5" />} />
+        <TabBtn active={tab === "grid"} onClick={() => setTab("grid")} icon={<Grid3x3 className="h-5 w-5" />} />
+        <TabBtn active={tab === "saved"} onClick={() => setTab("saved")} icon={<Bookmark className="h-5 w-5" />} />
+        <TabBtn active={tab === "tagged"} onClick={() => setTab("tagged")} icon={<UserSquare2 className="h-5 w-5" />} />
       </div>
 
-      <ProfileMediaGrid posts={visiblePosts} onOpen={setViewing} />
+      {tab === "grid" && (
+        <ProfileMediaGrid posts={visiblePosts} onOpen={setViewing} />
+      )}
+      {tab === "saved" && (
+        savedPosts.length > 0 ? (
+          <ProfileMediaGrid posts={savedPosts} onOpen={setViewing} />
+        ) : (
+          <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-foreground">
+              <Bookmark className="h-6 w-6" />
+            </div>
+            <div className="text-base font-semibold">Nada salvo ainda</div>
+            <p className="max-w-xs text-sm text-muted-foreground">
+              Toque no ícone de salvar em qualquer publicação para guardá-la aqui.
+            </p>
+          </div>
+        )
+      )}
+      {tab === "tagged" && (
+        <div className="flex flex-col items-center gap-2 px-6 py-12 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-foreground">
+            <UserSquare2 className="h-6 w-6" />
+          </div>
+          <div className="text-base font-semibold">Sem marcações</div>
+          <p className="max-w-xs text-sm text-muted-foreground">
+            Publicações em que você for marcado aparecerão aqui.
+          </p>
+        </div>
+      )}
 
       <PostViewer
         post={viewing}
         open={!!viewing}
         onOpenChange={(v) => !v && setViewing(null)}
-        canDelete
-        canEditWithGemini
-        onDelete={(p) => setDeleted((s) => new Set(s).add(p.id))}
+        canDelete={tab === "grid"}
+        canEditWithGemini={tab === "grid" && viewing?.user.username === currentUser.username}
+        onDelete={(p) => {
+          if (tab === "saved") togglePostSaved(p);
+          else setDeleted((s) => new Set(s).add(p.id));
+        }}
       />
     </>
   );
@@ -194,9 +228,10 @@ function Stat({ label, value, onClick }: { label: string; value: string; onClick
   return <div>{inner}</div>;
 }
 
-function TabBtn({ active, icon }: { active?: boolean; icon: React.ReactNode }) {
+function TabBtn({ active, icon, onClick }: { active?: boolean; icon: React.ReactNode; onClick?: () => void }) {
   return (
     <button
+      onClick={onClick}
       className={`flex items-center justify-center py-3 ${
         active ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground"
       }`}

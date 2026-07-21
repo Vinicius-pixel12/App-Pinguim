@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Send, Bookmark, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
 import { GeminiIcon } from "@/components/gemini-icon";
 import { openGeminiWithImage } from "@/lib/gemini";
+import { isPostSaved, togglePostSaved } from "@/lib/saved-posts";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -38,7 +40,8 @@ export function FeedPost({
   onRequestConverse: (user: MockPost["user"]) => void;
 }) {
   const [liked, setLiked] = useState(!!post.liked);
-  const [saved, setSaved] = useState(!!post.saved);
+  const [saved, setSaved] = useState<boolean>(!!post.saved);
+  useEffect(() => setSaved(isPostSaved(post.id)), [post.id]);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [likesOpen, setLikesOpen] = useState(false);
   const likeCount = post.likes + (liked && !post.liked ? 1 : 0) + (!liked && post.liked ? -1 : 0);
@@ -107,7 +110,14 @@ export function FeedPost({
             <IconBtn aria-label="Enviar">
               <Send className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
-            <IconBtn aria-label="Salvar" onClick={() => setSaved((v) => !v)}>
+            <IconBtn
+              aria-label="Salvar"
+              onClick={() => {
+                const now = togglePostSaved(post);
+                setSaved(now);
+                toast.success(now ? "Salvo na sua galeria" : "Removido da galeria");
+              }}
+            >
               <Bookmark
                 className="h-6 w-6 text-foreground"
                 fill={saved ? "currentColor" : "none"}
