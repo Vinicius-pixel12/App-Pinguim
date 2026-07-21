@@ -8,6 +8,7 @@ import { ShareProfileDialog } from "@/components/share-profile-dialog";
 import { UsersListDialog } from "@/components/users-list-dialog";
 import { ProfileMediaGrid } from "@/components/profile-media-grid";
 import { useProfile } from "@/lib/profile";
+import { useSavedPosts, togglePostSaved } from "@/lib/saved-posts";
 
 export const Route = createFileRoute("/perfil")({
   head: () => ({ meta: [{ title: "Perfil — Pinguim" }] }),
