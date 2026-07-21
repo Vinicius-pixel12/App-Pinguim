@@ -40,7 +40,8 @@ export function FeedPost({
   onRequestConverse: (user: MockPost["user"]) => void;
 }) {
   const [liked, setLiked] = useState(!!post.liked);
-  const [saved, setSaved] = useState(!!post.saved);
+  const [saved, setSaved] = useState<boolean>(!!post.saved);
+  useEffect(() => setSaved(isPostSaved(post.id)), [post.id]);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [likesOpen, setLikesOpen] = useState(false);
   const likeCount = post.likes + (liked && !post.liked ? 1 : 0) + (!liked && post.liked ? -1 : 0);
