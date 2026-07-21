@@ -199,15 +199,15 @@ export function CommentsSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="h-[85vh] gap-0 rounded-t-3xl p-0"
+        className="flex h-[85dvh] max-h-[85dvh] w-full flex-col gap-0 rounded-t-3xl p-0 sm:max-w-md sm:mx-auto"
       >
-        <SheetHeader className="border-b border-border p-4 text-center">
+        <SheetHeader className="shrink-0 border-b border-border p-4 text-center">
           <SheetTitle className="text-base font-semibold">
             {total} comentário{total === 1 ? "" : "s"}
           </SheetTitle>
         </SheetHeader>
 
-        <div className="h-[calc(85vh-140px)] overflow-y-auto px-4 py-3">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
           {comments.map((c) => (
             <div key={c.id} className="mb-4">
               <CommentRow
@@ -251,7 +251,7 @@ export function CommentsSheet({
           ))}
         </div>
 
-        <div className="border-t border-border bg-card p-3">
+        <div className="shrink-0 border-t border-border bg-card p-3" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}>
           {replyTo && (
             <div className="mb-2 flex items-center justify-between rounded-lg bg-muted px-3 py-1.5 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
