@@ -228,9 +228,10 @@ function Stat({ label, value, onClick }: { label: string; value: string; onClick
   return <div>{inner}</div>;
 }
 
-function TabBtn({ active, icon }: { active?: boolean; icon: React.ReactNode }) {
+function TabBtn({ active, icon, onClick }: { active?: boolean; icon: React.ReactNode; onClick?: () => void }) {
   return (
     <button
+      onClick={onClick}
       className={`flex items-center justify-center py-3 ${
         active ? "border-b-2 border-foreground text-foreground" : "text-muted-foreground"
       }`}
