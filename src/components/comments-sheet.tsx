@@ -251,7 +251,7 @@ export function CommentsSheet({
           ))}
         </div>
 
-        <div className="border-t border-border bg-card p-3">
+        <div className="shrink-0 border-t border-border bg-card p-3" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}>
           {replyTo && (
             <div className="mb-2 flex items-center justify-between rounded-lg bg-muted px-3 py-1.5 text-xs text-muted-foreground">
               <span className="flex items-center gap-1">
