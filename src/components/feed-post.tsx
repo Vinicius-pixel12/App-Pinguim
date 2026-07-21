@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Send, Bookmark, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
 import { GeminiIcon } from "@/components/gemini-icon";
 import { openGeminiWithImage } from "@/lib/gemini";
+import { isPostSaved, togglePostSaved } from "@/lib/saved-posts";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
