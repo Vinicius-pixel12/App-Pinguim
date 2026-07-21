@@ -110,7 +110,14 @@ export function FeedPost({
             <IconBtn aria-label="Enviar">
               <Send className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
-            <IconBtn aria-label="Salvar" onClick={() => setSaved((v) => !v)}>
+            <IconBtn
+              aria-label="Salvar"
+              onClick={() => {
+                const now = togglePostSaved(post);
+                setSaved(now);
+                toast.success(now ? "Salvo na sua galeria" : "Removido da galeria");
+              }}
+            >
               <Bookmark
                 className="h-6 w-6 text-foreground"
                 fill={saved ? "currentColor" : "none"}
