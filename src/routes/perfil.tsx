@@ -31,7 +31,9 @@ function Perfil() {
   const [deleted, setDeleted] = useState<Set<string>>(new Set());
   const [shareOpen, setShareOpen] = useState(false);
   const [listOpen, setListOpen] = useState<null | "followers" | "following">(null);
+  const [tab, setTab] = useState<"grid" | "saved" | "tagged">("grid");
   const visiblePosts = gridPosts.filter((p) => !deleted.has(p.id));
+  const savedPosts = useSavedPosts();
   const [profile] = useProfile();
   const verified = profile.selfieVerified && profile.documentVerified;
 
