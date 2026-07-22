@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowLeft,
   Lock,
@@ -9,8 +9,12 @@ import {
   Info,
   ChevronRight,
   LogOut,
+  ImageIcon,
+  Trash2,
 } from "lucide-react";
 import { useMyPrivacy } from "@/lib/privacy";
+import { useAppBackground } from "@/lib/app-background";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,8 +33,33 @@ export const Route = createFileRoute("/configuracoes/")({
 
 function Configuracoes() {
   const [privacy, setPrivacy] = useMyPrivacy();
+  const [bg, setBg] = useAppBackground();
+  const [pendingBg, setPendingBg] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handlePickFile = (file: File | undefined) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") setPendingBg(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const saveBg = () => {
+    if (!pendingBg) return;
+    setBg(pendingBg);
+    setPendingBg(null);
+    toast.success("Plano de fundo salvo");
+  };
+
+  const clearBg = () => {
+    setBg(null);
+    setPendingBg(null);
+    toast.success("Plano de fundo removido");
+  };
 
   const handleLogout = () => {
     setLogoutOpen(false);
