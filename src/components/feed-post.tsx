@@ -216,6 +216,12 @@ export function FeedPost({
         </DialogContent>
       </Dialog>
 
+      <SharePostDialog
+        post={post}
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+      />
+
     </article>
   );
 }
