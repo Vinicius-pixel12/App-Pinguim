@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Lock, Globe } from "lucide-react";
 import { useMyPrivacy } from "@/lib/privacy";
 
-export const Route = createFileRoute("/configuracoes")({
+export const Route = createFileRoute("/configuracoes/")({
   head: () => ({ meta: [{ title: "Configurações — Pinguim" }] }),
   component: Configuracoes,
 });

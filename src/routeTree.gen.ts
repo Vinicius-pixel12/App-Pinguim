@@ -14,9 +14,9 @@ import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as ExplorarRouteImport } from './routes/explorar'
 import { Route as EditarPerfilRouteImport } from './routes/editar-perfil'
 import { Route as ConversasRouteImport } from './routes/conversas'
-import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as CarteiraRouteImport } from './routes/carteira'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as PerfilUsernameRouteImport } from './routes/perfil.$username'
 
 const PerfilRoute = PerfilRouteImport.update({
@@ -44,11 +44,6 @@ const ConversasRoute = ConversasRouteImport.update({
   path: '/conversas',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
-  id: '/configuracoes',
-  path: '/configuracoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const CarteiraRoute = CarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
@@ -57,6 +52,11 @@ const CarteiraRoute = CarteiraRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesIndexRoute = ConfiguracoesIndexRouteImport.update({
+  id: '/configuracoes/',
+  path: '/configuracoes/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerfilUsernameRoute = PerfilUsernameRouteImport.update({
@@ -68,82 +68,82 @@ const PerfilUsernameRoute = PerfilUsernameRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/carteira': typeof CarteiraRoute
-  '/configuracoes': typeof ConfiguracoesRoute
   '/conversas': typeof ConversasRoute
   '/editar-perfil': typeof EditarPerfilRoute
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
   '/perfil/$username': typeof PerfilUsernameRoute
+  '/configuracoes/': typeof ConfiguracoesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/carteira': typeof CarteiraRoute
-  '/configuracoes': typeof ConfiguracoesRoute
   '/conversas': typeof ConversasRoute
   '/editar-perfil': typeof EditarPerfilRoute
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
   '/perfil/$username': typeof PerfilUsernameRoute
+  '/configuracoes': typeof ConfiguracoesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/carteira': typeof CarteiraRoute
-  '/configuracoes': typeof ConfiguracoesRoute
   '/conversas': typeof ConversasRoute
   '/editar-perfil': typeof EditarPerfilRoute
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
   '/perfil/$username': typeof PerfilUsernameRoute
+  '/configuracoes/': typeof ConfiguracoesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/carteira'
-    | '/configuracoes'
     | '/conversas'
     | '/editar-perfil'
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
     | '/perfil/$username'
+    | '/configuracoes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/carteira'
-    | '/configuracoes'
     | '/conversas'
     | '/editar-perfil'
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
     | '/perfil/$username'
+    | '/configuracoes'
   id:
     | '__root__'
     | '/'
     | '/carteira'
-    | '/configuracoes'
     | '/conversas'
     | '/editar-perfil'
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
     | '/perfil/$username'
+    | '/configuracoes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CarteiraRoute: typeof CarteiraRoute
-  ConfiguracoesRoute: typeof ConfiguracoesRoute
   ConversasRoute: typeof ConversasRoute
   EditarPerfilRoute: typeof EditarPerfilRoute
   ExplorarRoute: typeof ExplorarRoute
   NotificacoesRoute: typeof NotificacoesRoute
   PerfilRoute: typeof PerfilRouteWithChildren
+  ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -183,13 +183,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConversasRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/configuracoes': {
-      id: '/configuracoes'
-      path: '/configuracoes'
-      fullPath: '/configuracoes'
-      preLoaderRoute: typeof ConfiguracoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/carteira': {
       id: '/carteira'
       path: '/carteira'
@@ -202,6 +195,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes/': {
+      id: '/configuracoes/'
+      path: '/configuracoes'
+      fullPath: '/configuracoes/'
+      preLoaderRoute: typeof ConfiguracoesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/perfil/$username': {
@@ -228,12 +228,12 @@ const PerfilRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CarteiraRoute: CarteiraRoute,
-  ConfiguracoesRoute: ConfiguracoesRoute,
   ConversasRoute: ConversasRoute,
   EditarPerfilRoute: EditarPerfilRoute,
   ExplorarRoute: ExplorarRoute,
   NotificacoesRoute: NotificacoesRoute,
   PerfilRoute: PerfilRouteWithChildren,
+  ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
