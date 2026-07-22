@@ -45,6 +45,7 @@ export function FeedPost({
   useEffect(() => setSaved(isPostSaved(post.id)), [post.id]);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [likesOpen, setLikesOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const likeCount = post.likes + (liked && !post.liked ? 1 : 0) + (!liked && post.liked ? -1 : 0);
   const isOwn = post.user.username === currentUser.username;
 
