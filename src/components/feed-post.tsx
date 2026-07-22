@@ -5,6 +5,7 @@ import type { MockPost } from "@/lib/mock-data";
 import { users, currentUser } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
+import { SharePostDialog } from "@/components/share-post-dialog";
 import { GeminiIcon } from "@/components/gemini-icon";
 import { openGeminiWithImage } from "@/lib/gemini";
 import { isPostSaved, togglePostSaved } from "@/lib/saved-posts";
@@ -44,6 +45,7 @@ export function FeedPost({
   useEffect(() => setSaved(isPostSaved(post.id)), [post.id]);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [likesOpen, setLikesOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const likeCount = post.likes + (liked && !post.liked ? 1 : 0) + (!liked && post.liked ? -1 : 0);
   const isOwn = post.user.username === currentUser.username;
 
@@ -107,7 +109,7 @@ export function FeedPost({
             <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
               <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
-            <IconBtn aria-label="Enviar">
+            <IconBtn aria-label="Enviar" onClick={() => setShareOpen(true)}>
               <Send className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
             <IconBtn
@@ -213,6 +215,12 @@ export function FeedPost({
           </div>
         </DialogContent>
       </Dialog>
+
+      <SharePostDialog
+        post={post}
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+      />
 
     </article>
   );
