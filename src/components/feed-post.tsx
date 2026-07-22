@@ -5,6 +5,7 @@ import type { MockPost } from "@/lib/mock-data";
 import { users, currentUser } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
+import { SharePostDialog } from "@/components/share-post-dialog";
 import { GeminiIcon } from "@/components/gemini-icon";
 import { openGeminiWithImage } from "@/lib/gemini";
 import { isPostSaved, togglePostSaved } from "@/lib/saved-posts";
