@@ -19,6 +19,13 @@ import { Route as CarteiraRouteImport } from './routes/carteira'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as PerfilUsernameRouteImport } from './routes/perfil.$username'
+import { Route as ConfiguracoesSuporteRouteImport } from './routes/configuracoes.suporte'
+import { Route as ConfiguracoesSobreRouteImport } from './routes/configuracoes.sobre'
+import { Route as ConfiguracoesLegalRouteImport } from './routes/configuracoes.legal'
+import { Route as ConfiguracoesSuporteIndexRouteImport } from './routes/configuracoes.suporte.index'
+import { Route as ConfiguracoesLegalIndexRouteImport } from './routes/configuracoes.legal.index'
+import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configuracoes.suporte.$slug'
+import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
 
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
@@ -70,6 +77,43 @@ const PerfilUsernameRoute = PerfilUsernameRouteImport.update({
   path: '/$username',
   getParentRoute: () => PerfilRoute,
 } as any)
+const ConfiguracoesSuporteRoute = ConfiguracoesSuporteRouteImport.update({
+  id: '/suporte',
+  path: '/suporte',
+  getParentRoute: () => ConfiguracoesRoute,
+} as any)
+const ConfiguracoesSobreRoute = ConfiguracoesSobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => ConfiguracoesRoute,
+} as any)
+const ConfiguracoesLegalRoute = ConfiguracoesLegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => ConfiguracoesRoute,
+} as any)
+const ConfiguracoesSuporteIndexRoute =
+  ConfiguracoesSuporteIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => ConfiguracoesSuporteRoute,
+  } as any)
+const ConfiguracoesLegalIndexRoute = ConfiguracoesLegalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ConfiguracoesLegalRoute,
+} as any)
+const ConfiguracoesSuporteSlugRoute =
+  ConfiguracoesSuporteSlugRouteImport.update({
+    id: '/$slug',
+    path: '/$slug',
+    getParentRoute: () => ConfiguracoesSuporteRoute,
+  } as any)
+const ConfiguracoesLegalSlugRoute = ConfiguracoesLegalSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ConfiguracoesLegalRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,8 +124,15 @@ export interface FileRoutesByFullPath {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
+  '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
+  '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
   '/perfil/$username': typeof PerfilUsernameRoute
   '/configuracoes/': typeof ConfiguracoesIndexRoute
+  '/configuracoes/legal/$slug': typeof ConfiguracoesLegalSlugRoute
+  '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
+  '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
+  '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -91,8 +142,13 @@ export interface FileRoutesByTo {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/perfil/$username': typeof PerfilUsernameRoute
   '/configuracoes': typeof ConfiguracoesIndexRoute
+  '/configuracoes/legal/$slug': typeof ConfiguracoesLegalSlugRoute
+  '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
+  '/configuracoes/legal': typeof ConfiguracoesLegalIndexRoute
+  '/configuracoes/suporte': typeof ConfiguracoesSuporteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -104,8 +160,15 @@ export interface FileRoutesById {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
+  '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
+  '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
   '/perfil/$username': typeof PerfilUsernameRoute
   '/configuracoes/': typeof ConfiguracoesIndexRoute
+  '/configuracoes/legal/$slug': typeof ConfiguracoesLegalSlugRoute
+  '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
+  '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
+  '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,8 +181,15 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/configuracoes/legal'
+    | '/configuracoes/sobre'
+    | '/configuracoes/suporte'
     | '/perfil/$username'
     | '/configuracoes/'
+    | '/configuracoes/legal/$slug'
+    | '/configuracoes/suporte/$slug'
+    | '/configuracoes/legal/'
+    | '/configuracoes/suporte/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -129,8 +199,13 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/configuracoes/sobre'
     | '/perfil/$username'
     | '/configuracoes'
+    | '/configuracoes/legal/$slug'
+    | '/configuracoes/suporte/$slug'
+    | '/configuracoes/legal'
+    | '/configuracoes/suporte'
   id:
     | '__root__'
     | '/'
@@ -141,8 +216,15 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/configuracoes/legal'
+    | '/configuracoes/sobre'
+    | '/configuracoes/suporte'
     | '/perfil/$username'
     | '/configuracoes/'
+    | '/configuracoes/legal/$slug'
+    | '/configuracoes/suporte/$slug'
+    | '/configuracoes/legal/'
+    | '/configuracoes/suporte/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -228,14 +310,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilUsernameRouteImport
       parentRoute: typeof PerfilRoute
     }
+    '/configuracoes/suporte': {
+      id: '/configuracoes/suporte'
+      path: '/suporte'
+      fullPath: '/configuracoes/suporte'
+      preLoaderRoute: typeof ConfiguracoesSuporteRouteImport
+      parentRoute: typeof ConfiguracoesRoute
+    }
+    '/configuracoes/sobre': {
+      id: '/configuracoes/sobre'
+      path: '/sobre'
+      fullPath: '/configuracoes/sobre'
+      preLoaderRoute: typeof ConfiguracoesSobreRouteImport
+      parentRoute: typeof ConfiguracoesRoute
+    }
+    '/configuracoes/legal': {
+      id: '/configuracoes/legal'
+      path: '/legal'
+      fullPath: '/configuracoes/legal'
+      preLoaderRoute: typeof ConfiguracoesLegalRouteImport
+      parentRoute: typeof ConfiguracoesRoute
+    }
+    '/configuracoes/suporte/': {
+      id: '/configuracoes/suporte/'
+      path: '/'
+      fullPath: '/configuracoes/suporte/'
+      preLoaderRoute: typeof ConfiguracoesSuporteIndexRouteImport
+      parentRoute: typeof ConfiguracoesSuporteRoute
+    }
+    '/configuracoes/legal/': {
+      id: '/configuracoes/legal/'
+      path: '/'
+      fullPath: '/configuracoes/legal/'
+      preLoaderRoute: typeof ConfiguracoesLegalIndexRouteImport
+      parentRoute: typeof ConfiguracoesLegalRoute
+    }
+    '/configuracoes/suporte/$slug': {
+      id: '/configuracoes/suporte/$slug'
+      path: '/$slug'
+      fullPath: '/configuracoes/suporte/$slug'
+      preLoaderRoute: typeof ConfiguracoesSuporteSlugRouteImport
+      parentRoute: typeof ConfiguracoesSuporteRoute
+    }
+    '/configuracoes/legal/$slug': {
+      id: '/configuracoes/legal/$slug'
+      path: '/$slug'
+      fullPath: '/configuracoes/legal/$slug'
+      preLoaderRoute: typeof ConfiguracoesLegalSlugRouteImport
+      parentRoute: typeof ConfiguracoesLegalRoute
+    }
   }
 }
 
+interface ConfiguracoesLegalRouteChildren {
+  ConfiguracoesLegalSlugRoute: typeof ConfiguracoesLegalSlugRoute
+  ConfiguracoesLegalIndexRoute: typeof ConfiguracoesLegalIndexRoute
+}
+
+const ConfiguracoesLegalRouteChildren: ConfiguracoesLegalRouteChildren = {
+  ConfiguracoesLegalSlugRoute: ConfiguracoesLegalSlugRoute,
+  ConfiguracoesLegalIndexRoute: ConfiguracoesLegalIndexRoute,
+}
+
+const ConfiguracoesLegalRouteWithChildren =
+  ConfiguracoesLegalRoute._addFileChildren(ConfiguracoesLegalRouteChildren)
+
+interface ConfiguracoesSuporteRouteChildren {
+  ConfiguracoesSuporteSlugRoute: typeof ConfiguracoesSuporteSlugRoute
+  ConfiguracoesSuporteIndexRoute: typeof ConfiguracoesSuporteIndexRoute
+}
+
+const ConfiguracoesSuporteRouteChildren: ConfiguracoesSuporteRouteChildren = {
+  ConfiguracoesSuporteSlugRoute: ConfiguracoesSuporteSlugRoute,
+  ConfiguracoesSuporteIndexRoute: ConfiguracoesSuporteIndexRoute,
+}
+
+const ConfiguracoesSuporteRouteWithChildren =
+  ConfiguracoesSuporteRoute._addFileChildren(ConfiguracoesSuporteRouteChildren)
+
 interface ConfiguracoesRouteChildren {
+  ConfiguracoesLegalRoute: typeof ConfiguracoesLegalRouteWithChildren
+  ConfiguracoesSobreRoute: typeof ConfiguracoesSobreRoute
+  ConfiguracoesSuporteRoute: typeof ConfiguracoesSuporteRouteWithChildren
   ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
 }
 
 const ConfiguracoesRouteChildren: ConfiguracoesRouteChildren = {
+  ConfiguracoesLegalRoute: ConfiguracoesLegalRouteWithChildren,
+  ConfiguracoesSobreRoute: ConfiguracoesSobreRoute,
+  ConfiguracoesSuporteRoute: ConfiguracoesSuporteRouteWithChildren,
   ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
 }
 
