@@ -14,6 +14,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BottomNav } from "@/components/bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
+import { AppBackground } from "@/components/app-background";
+import { useAppBackground } from "@/lib/app-background";
 
 const HIDE_NAV_ROUTES = new Set(["/auth", "/onboarding"]);
 
@@ -132,10 +134,16 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const showNav = !HIDE_NAV_ROUTES.has(pathname);
+  const [bg] = useAppBackground();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="mx-auto flex min-h-screen max-w-md flex-col bg-background pb-16">
+      <AppBackground />
+      <div
+        className={`mx-auto flex min-h-screen max-w-md flex-col pb-16 ${
+          bg ? "bg-background/70 backdrop-blur-sm" : "bg-background"
+        }`}
+      >
         <Outlet />
       </div>
       {showNav && <BottomNav />}

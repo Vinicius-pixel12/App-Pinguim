@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowLeft,
   Lock,
@@ -9,8 +9,12 @@ import {
   Info,
   ChevronRight,
   LogOut,
+  ImageIcon,
+  Trash2,
 } from "lucide-react";
 import { useMyPrivacy } from "@/lib/privacy";
+import { useAppBackground } from "@/lib/app-background";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,8 +33,33 @@ export const Route = createFileRoute("/configuracoes/")({
 
 function Configuracoes() {
   const [privacy, setPrivacy] = useMyPrivacy();
+  const [bg, setBg] = useAppBackground();
+  const [pendingBg, setPendingBg] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const navigate = useNavigate();
+
+  const handlePickFile = (file: File | undefined) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") setPendingBg(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const saveBg = () => {
+    if (!pendingBg) return;
+    setBg(pendingBg);
+    setPendingBg(null);
+    toast.success("Plano de fundo salvo");
+  };
+
+  const clearBg = () => {
+    setBg(null);
+    setPendingBg(null);
+    toast.success("Plano de fundo removido");
+  };
 
   const handleLogout = () => {
     setLogoutOpen(false);
@@ -68,6 +97,72 @@ function Configuracoes() {
           />
         </div>
       </section>
+
+      <section className="px-4 py-2">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Plano de fundo do app
+        </h2>
+        <div className="space-y-3 rounded-2xl border border-border bg-card p-4">
+          <div className="relative aspect-[9/16] max-h-64 w-full overflow-hidden rounded-xl bg-muted">
+            {(pendingBg || bg) ? (
+              <>
+                <img
+                  src={pendingBg || bg || ""}
+                  alt="Prévia do fundo"
+                  className="absolute inset-0 h-full w-full object-cover"
+                  style={{ filter: "blur(20px) saturate(120%)", transform: "scale(1.1)" }}
+                />
+                <div className="absolute inset-0 bg-background/60" />
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-medium text-foreground/70">
+                  Prévia (desfocado)
+                </div>
+              </>
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                Nenhum fundo — branco padrão
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => fileRef.current?.click()}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-xs font-semibold"
+            >
+              <ImageIcon className="h-4 w-4" />
+              Escolher imagem
+            </button>
+            {pendingBg && (
+              <button
+                onClick={saveBg}
+                className="rounded-full bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground"
+              >
+                Salvar fundo
+              </button>
+            )}
+            {(bg || pendingBg) && (
+              <button
+                onClick={clearBg}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 text-xs font-semibold text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+                Remover
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            A imagem escolhida fica desfocada atrás do app. Fica salva no seu dispositivo.
+          </p>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handlePickFile(e.target.files?.[0])}
+          />
+        </div>
+      </section>
+
+
 
       <section className="px-4 py-2">
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
