@@ -140,8 +140,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AppBackground />
       <div
-        className={`mx-auto flex min-h-screen max-w-md flex-col pb-16 ${
-          bg ? "bg-background/70 backdrop-blur-sm" : "bg-background"
+        className={`relative z-10 mx-auto flex min-h-screen max-w-md flex-col pb-16 ${
+          bg ? "bg-background/40 backdrop-blur-md" : "bg-background"
         }`}
       >
         <Outlet />
@@ -149,5 +149,6 @@ function RootComponent() {
       {showNav && <BottomNav />}
       <Toaster position="top-center" />
     </QueryClientProvider>
+
   );
 }
