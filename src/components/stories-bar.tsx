@@ -106,13 +106,21 @@ export function StoriesBar() {
           );
 
           return (
-            <button
+            <div
               key={s.id}
+              role="button"
+              tabIndex={0}
               onClick={() => (s.isOwn ? handleOwnClick() : openStory(s.user.username))}
-              className="flex w-[74px] shrink-0 flex-col items-center"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  s.isOwn ? handleOwnClick() : openStory(s.user.username);
+                }
+              }}
+              className="flex w-[74px] shrink-0 cursor-pointer flex-col items-center"
             >
               {inner}
-            </button>
+            </div>
           );
         })}
       </div>
