@@ -141,7 +141,7 @@ function RootComponent() {
       <AppBackground />
       <div
         className={`relative z-10 mx-auto flex min-h-screen max-w-md flex-col pb-16 ${
-          bg ? "bg-background/40 backdrop-blur-md" : "bg-background"
+          bg ? "bg-background/40" : "bg-background"
         }`}
       >
         <Outlet />
