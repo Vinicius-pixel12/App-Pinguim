@@ -12,6 +12,8 @@ export const createDeposit = createServerFn({ method: "POST" })
         amount: z.number().min(5).max(10000),
         method: z.enum(["pix", "credit_card"]),
         cardToken: z.string().optional(),
+        cpf: z.string().optional(),
+        holderName: z.string().optional(),
       })
       .parse(input),
   )
@@ -22,8 +24,19 @@ export const createDeposit = createServerFn({ method: "POST" })
       .select("username, display_name")
       .eq("id", userId)
       .maybeSingle();
+    const { data: kyc } = await supabase
+      .from("kyc_verifications")
+      .select("cpf, full_name")
+      .eq("user_id", userId)
+      .maybeSingle();
 
-    const name = profile?.display_name || profile?.username || "Usuário Pinguim";
+    const document = (data.cpf ?? kyc?.cpf ?? "").replace(/\D/g, "");
+    if (document.length !== 11) {
+      throw new Error("Informe um CPF válido para concluir o pagamento");
+    }
+
+    const name =
+      data.holderName || kyc?.full_name || profile?.display_name || profile?.username || "Usuário Pinguim";
     const email = (claims as { email?: string })?.email ?? `${userId}@pinguim.app`;
     const amountCents = Math.round(data.amount * 100);
 
@@ -33,12 +46,14 @@ export const createDeposit = createServerFn({ method: "POST" })
             amountCents,
             customerName: name,
             customerEmail: email,
+            customerDocument: document,
             metadata: { user_id: userId },
           })
         : await createCardOrder({
             amountCents,
             customerName: name,
             customerEmail: email,
+            customerDocument: document,
             cardToken: z.string().min(1).parse(data.cardToken),
             metadata: { user_id: userId },
           });
