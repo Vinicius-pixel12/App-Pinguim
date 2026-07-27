@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { MessageCircle, Phone, ChevronRight, X, CheckCircle2, Gift, Hand } from "lucide-react";
+import { MessageCircle, Phone, ChevronRight, X, CheckCircle2, Gift, Hand, Loader2 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import type { MockUser } from "@/lib/mock-data";
 import {
   Dialog,
@@ -10,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession, useWallet } from "@/hooks/use-account";
 
 const PRICE = 4.97;
 
@@ -23,20 +27,64 @@ export function ConverseModal({
   onOpenChange: (v: boolean) => void;
 }) {
   const [method, setMethod] = useState<"chat" | "whatsapp" | null>(null);
+  const [busy, setBusy] = useState(false);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const { user: me } = useSession();
+  const { data: wallet } = useWallet();
 
   if (!user) return null;
 
-  const handlePay = () => {
+  const handlePay = async () => {
     if (!method) {
       toast.error("Escolha como deseja iniciar a conversa");
       return;
     }
+    if (!me) {
+      onOpenChange(false);
+      navigate({ to: "/auth" });
+      return;
+    }
+    if (Number(wallet?.balance ?? 0) < PRICE) {
+      toast.error("Saldo insuficiente", { description: "Adicione saldo na sua carteira." });
+      onOpenChange(false);
+      navigate({ to: "/carteira" });
+      return;
+    }
+
+    setBusy(true);
+    const { data: target } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", user.username)
+      .maybeSingle();
+
+    if (!target) {
+      setBusy(false);
+      toast.error("Este perfil ainda não está disponível para conversas.");
+      return;
+    }
+
+    const { error } = await supabase.rpc("create_conversation_request", {
+      _target_id: target.id,
+      _channel: method,
+    });
+    setBusy(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    qc.invalidateQueries({ queryKey: ["wallet", me.id] });
+    qc.invalidateQueries({ queryKey: ["transactions", me.id] });
     toast.success(`Pedido enviado a ${user.name}!`, {
       description: "Aguarde a resposta em até 30 dias na aba Notificações.",
     });
     setMethod(null);
     onOpenChange(false);
   };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
