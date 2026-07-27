@@ -390,16 +390,30 @@ function AddBalanceDialog({
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="cpf">CPF do pagador</Label>
-              <Input
-                id="cpf"
-                inputMode="numeric"
-                placeholder="000.000.000-00"
-                value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
-              />
-            </div>
+            {kycCpf ? (
+              <div className="space-y-1.5">
+                <Label htmlFor="cpf">CPF do pagador (verificado)</Label>
+                <Input id="cpf" value={maskCpf(kycCpf)} readOnly disabled />
+                <p className="text-[11px] text-muted-foreground">
+                  O pagamento só é aceito no CPF cadastrado na sua verificação de identidade.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3 rounded-2xl bg-warning/10 p-4">
+                <p className="text-sm font-medium text-warning">
+                  Cadastre sua verificação de identidade antes de pagar
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Precisamos confirmar que o CPF do pagamento é o mesmo da sua conta.
+                </p>
+                <Button asChild variant="outline" className="w-full rounded-2xl">
+                  <Link to="/verificacao" onClick={() => onOpenChange(false)}>
+                    Fazer verificação
+                  </Link>
+                </Button>
+              </div>
+            )}
+
 
             {mode === "choose" ? (
               <>
