@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerificacaoRouteImport } from './routes/verificacao'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as ExplorarRouteImport } from './routes/explorar'
@@ -16,6 +17,8 @@ import { Route as EditarPerfilRouteImport } from './routes/editar-perfil'
 import { Route as ConversasRouteImport } from './routes/conversas'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as CarteiraRouteImport } from './routes/carteira'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as PerfilUsernameRouteImport } from './routes/perfil.$username'
@@ -26,7 +29,13 @@ import { Route as ConfiguracoesSuporteIndexRouteImport } from './routes/configur
 import { Route as ConfiguracoesLegalIndexRouteImport } from './routes/configuracoes.legal.index'
 import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configuracoes.suporte.$slug'
 import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
+import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
 
+const VerificacaoRoute = VerificacaoRouteImport.update({
+  id: '/verificacao',
+  path: '/verificacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
@@ -60,6 +69,16 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
 const CarteiraRoute = CarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -114,9 +133,17 @@ const ConfiguracoesLegalSlugRoute = ConfiguracoesLegalSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ConfiguracoesLegalRoute,
 } as any)
+const ApiPublicWebhooksPagarmeRoute =
+  ApiPublicWebhooksPagarmeRouteImport.update({
+    id: '/api/public/webhooks/pagarme',
+    path: '/api/public/webhooks/pagarme',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/carteira': typeof CarteiraRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/conversas': typeof ConversasRoute
@@ -124,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/verificacao': typeof VerificacaoRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
@@ -133,15 +161,19 @@ export interface FileRoutesByFullPath {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/carteira': typeof CarteiraRoute
   '/conversas': typeof ConversasRoute
   '/editar-perfil': typeof EditarPerfilRoute
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/verificacao': typeof VerificacaoRoute
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/perfil/$username': typeof PerfilUsernameRoute
   '/configuracoes': typeof ConfiguracoesIndexRoute
@@ -149,10 +181,13 @@ export interface FileRoutesByTo {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/auth': typeof AuthRoute
   '/carteira': typeof CarteiraRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/conversas': typeof ConversasRoute
@@ -160,6 +195,7 @@ export interface FileRoutesById {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/verificacao': typeof VerificacaoRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
@@ -169,11 +205,14 @@ export interface FileRoutesById {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
+    | '/auth'
     | '/carteira'
     | '/configuracoes'
     | '/conversas'
@@ -181,6 +220,7 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/verificacao'
     | '/configuracoes/legal'
     | '/configuracoes/sobre'
     | '/configuracoes/suporte'
@@ -190,15 +230,19 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
+    | '/api/public/webhooks/pagarme'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
+    | '/auth'
     | '/carteira'
     | '/conversas'
     | '/editar-perfil'
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/verificacao'
     | '/configuracoes/sobre'
     | '/perfil/$username'
     | '/configuracoes'
@@ -206,9 +250,12 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal'
     | '/configuracoes/suporte'
+    | '/api/public/webhooks/pagarme'
   id:
     | '__root__'
     | '/'
+    | '/admin'
+    | '/auth'
     | '/carteira'
     | '/configuracoes'
     | '/conversas'
@@ -216,6 +263,7 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/verificacao'
     | '/configuracoes/legal'
     | '/configuracoes/sobre'
     | '/configuracoes/suporte'
@@ -225,10 +273,13 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
+    | '/api/public/webhooks/pagarme'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
+  AuthRoute: typeof AuthRoute
   CarteiraRoute: typeof CarteiraRoute
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
   ConversasRoute: typeof ConversasRoute
@@ -236,10 +287,19 @@ export interface RootRouteChildren {
   ExplorarRoute: typeof ExplorarRoute
   NotificacoesRoute: typeof NotificacoesRoute
   PerfilRoute: typeof PerfilRouteWithChildren
+  VerificacaoRoute: typeof VerificacaoRoute
+  ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verificacao': {
+      id: '/verificacao'
+      path: '/verificacao'
+      fullPath: '/verificacao'
+      preLoaderRoute: typeof VerificacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/perfil': {
       id: '/perfil'
       path: '/perfil'
@@ -287,6 +347,20 @@ declare module '@tanstack/react-router' {
       path: '/carteira'
       fullPath: '/carteira'
       preLoaderRoute: typeof CarteiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -359,6 +433,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesLegalSlugRouteImport
       parentRoute: typeof ConfiguracoesLegalRoute
     }
+    '/api/public/webhooks/pagarme': {
+      id: '/api/public/webhooks/pagarme'
+      path: '/api/public/webhooks/pagarme'
+      fullPath: '/api/public/webhooks/pagarme'
+      preLoaderRoute: typeof ApiPublicWebhooksPagarmeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -419,6 +500,8 @@ const PerfilRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
+  AuthRoute: AuthRoute,
   CarteiraRoute: CarteiraRoute,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
   ConversasRoute: ConversasRoute,
@@ -426,6 +509,8 @@ const rootRouteChildren: RootRouteChildren = {
   ExplorarRoute: ExplorarRoute,
   NotificacoesRoute: NotificacoesRoute,
   PerfilRoute: PerfilRouteWithChildren,
+  VerificacaoRoute: VerificacaoRoute,
+  ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
