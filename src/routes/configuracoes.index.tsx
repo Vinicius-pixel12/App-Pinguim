@@ -18,6 +18,8 @@ import {
 import { useMyPrivacy } from "@/lib/privacy";
 import { useAppBackground } from "@/lib/app-background";
 import { useIsAdmin } from "@/hooks/use-account";
+import { supabase } from "@/integrations/supabase/client";
+
 import { toast } from "sonner";
 
 import {
