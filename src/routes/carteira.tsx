@@ -423,16 +423,19 @@ function AddBalanceDialog({
                 </Button>
               </div>
             )}
-
-
             {mode === "choose" ? (
               <>
-                <Button disabled={busy} onClick={startPix} className="w-full rounded-2xl py-6">
+                <Button
+                  disabled={busy || !kycCpf}
+                  onClick={startPix}
+                  className="w-full rounded-2xl py-6"
+                >
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar com PIX"}
                 </Button>
                 <Button
                   variant="outline"
-                  disabled={busy}
+                  disabled={busy || !kycCpf}
+
                   onClick={() => setMode("card")}
                   className="w-full rounded-2xl py-6"
                 >
