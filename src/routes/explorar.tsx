@@ -1,13 +1,55 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Search } from "lucide-react";
-import { explorePosts } from "@/lib/mock-data";
+import { useMemo, useState } from "react";
+import { users, posts, type MockPost } from "@/lib/mock-data";
+import { PostViewer } from "@/components/post-viewer";
 
 export const Route = createFileRoute("/explorar")({
-  head: () => ({ meta: [{ title: "Explorar — Pinguim" }] }),
+  head: () => ({
+    meta: [
+      { title: "Explorar — Pinguim" },
+      {
+        name: "description",
+        content:
+          "Descubra publicações de perfis públicos no Pinguim e conheça novas pessoas.",
+      },
+      { property: "og:title", content: "Explorar — Pinguim" },
+      {
+        property: "og:description",
+        content: "Descubra publicações de perfis públicos no Pinguim.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Explorar,
 });
 
 function Explorar() {
+  const [viewing, setViewing] = useState<MockPost | null>(null);
+
+  // Apenas perfis públicos aparecem no Explorar
+  const publicUsers = useMemo(() => users.filter((u) => !u.isPrivate), []);
+
+  const publicPosts = useMemo<MockPost[]>(
+    () =>
+      Array.from({ length: 18 }).map((_, i) => {
+        const user = publicUsers[i % publicUsers.length];
+        const base = posts[i % posts.length];
+        return {
+          ...base,
+          id: `explore-${i}`,
+          user,
+          image: `https://picsum.photos/seed/explore-${i}/900/900`,
+          caption: base.caption,
+          likes: 100 + i * 37,
+          comments: 5 + i,
+          kind: i % 6 === 5 ? "video" : "photo",
+        };
+      }),
+    [publicUsers],
+  );
+
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur">
@@ -19,12 +61,28 @@ function Explorar() {
         </div>
       </header>
       <div className="grid grid-cols-3 gap-[2px]">
-        {explorePosts.map((p) => (
-          <button key={p.id} className="aspect-square overflow-hidden bg-muted">
-            <img src={p.image} alt="" className="h-full w-full object-cover" loading="lazy" />
+        {publicPosts.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => setViewing(p)}
+            aria-label={`Abrir publicação de @${p.user.username}`}
+            className="aspect-square overflow-hidden bg-muted transition active:scale-[0.98]"
+          >
+            <img
+              src={p.image}
+              alt={`Publicação de @${p.user.username}`}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
           </button>
         ))}
       </div>
+
+      <PostViewer
+        post={viewing}
+        open={!!viewing}
+        onOpenChange={(v) => !v && setViewing(null)}
+      />
     </>
   );
 }
