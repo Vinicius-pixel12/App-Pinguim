@@ -68,10 +68,12 @@ function Configuracoes() {
     toast.success("Plano de fundo removido");
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setLogoutOpen(false);
-    navigate({ to: "/" });
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
   };
+
 
   return (
     <>
