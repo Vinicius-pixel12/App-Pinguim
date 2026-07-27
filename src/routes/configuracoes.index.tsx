@@ -170,11 +170,26 @@ function Configuracoes() {
         </h2>
         <div className="space-y-2">
           <NavRow
+            to="/verificacao"
+            icon={<ShieldCheck className="h-5 w-5" />}
+            title="Verificação de conta"
+            desc="Documento, selfie e chave PIX para saques"
+          />
+          {isAdmin && (
+            <NavRow
+              to="/admin"
+              icon={<Shield className="h-5 w-5" />}
+              title="Painel administrativo"
+              desc="Aprovar verificações e saques"
+            />
+          )}
+          <NavRow
             to="/configuracoes/suporte"
             icon={<LifeBuoy className="h-5 w-5" />}
             title="Suporte"
             desc="Central de ajuda, contato e denúncias"
           />
+
           <NavRow
             to="/configuracoes/legal"
             icon={<FileText className="h-5 w-5" />}
