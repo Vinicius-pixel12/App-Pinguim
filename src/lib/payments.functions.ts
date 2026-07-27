@@ -42,6 +42,20 @@ export const createDeposit = createServerFn({ method: "POST" })
     }
     const document = kycCpf;
 
+    // Garante que este CPF não pertence a outra conta do sistema.
+    {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: owners } = await supabaseAdmin
+        .from("kyc_verifications")
+        .select("user_id")
+        .eq("cpf", document);
+      if ((owners ?? []).some((o) => o.user_id !== userId)) {
+        throw new Error("Este CPF já está vinculado a outra conta");
+      }
+    }
+
+
+
 
     const name =
       data.holderName || kyc?.full_name || profile?.display_name || profile?.username || "Usuário Pinguim";
