@@ -47,24 +47,35 @@ function parseOrder(order: Record<string, unknown>): CreatedOrder {
   };
 }
 
-export async function createPixOrder(input: {
-  amountCents: number;
+type Customer = {
   customerName: string;
   customerEmail: string;
-  metadata: Record<string, string>;
-}): Promise<CreatedOrder> {
+  customerDocument: string;
+};
+
+function buildCustomer(input: Customer) {
+  return {
+    name: input.customerName,
+    email: input.customerEmail,
+    type: "individual",
+    document: input.customerDocument,
+    document_type: "CPF",
+  };
+}
+
+function buildItems(amountCents: number) {
+  return [{ amount: amountCents, description: "Adicionar saldo Pinguim", quantity: 1 }];
+}
+
+export async function createPixOrder(
+  input: Customer & { amountCents: number; metadata: Record<string, string> },
+): Promise<CreatedOrder> {
   const order = await call("/orders", {
     method: "POST",
     body: JSON.stringify({
       closed: true,
-      items: [
-        {
-          amount: input.amountCents,
-          description: "Adicionar saldo Pinguim",
-          quantity: 1,
-        },
-      ],
-      customer: { name: input.customerName, email: input.customerEmail, type: "individual" },
+      items: buildItems(input.amountCents),
+      customer: buildCustomer(input),
       payments: [{ payment_method: "pix", pix: { expires_in: 3600 } }],
       metadata: input.metadata,
     }),
@@ -72,29 +83,27 @@ export async function createPixOrder(input: {
   return parseOrder(order);
 }
 
-export async function createCardOrder(input: {
-  amountCents: number;
-  customerName: string;
-  customerEmail: string;
-  cardToken: string;
-  metadata: Record<string, string>;
-}): Promise<CreatedOrder> {
+export async function createCardOrder(
+  input: Customer & {
+    amountCents: number;
+    cardToken: string;
+    metadata: Record<string, string>;
+  },
+): Promise<CreatedOrder> {
   const order = await call("/orders", {
     method: "POST",
     body: JSON.stringify({
       closed: true,
-      items: [
-        {
-          amount: input.amountCents,
-          description: "Adicionar saldo Pinguim",
-          quantity: 1,
-        },
-      ],
-      customer: { name: input.customerName, email: input.customerEmail, type: "individual" },
+      items: buildItems(input.amountCents),
+      customer: buildCustomer(input),
       payments: [
         {
           payment_method: "credit_card",
-          credit_card: { installments: 1, statement_descriptor: "PINGUIM", card_token: input.cardToken },
+          credit_card: {
+            installments: 1,
+            statement_descriptor: "PINGUIM",
+            card_token: input.cardToken,
+          },
         },
       ],
       metadata: input.metadata,
