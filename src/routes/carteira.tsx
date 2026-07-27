@@ -25,7 +25,8 @@ import {
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession, useWallet, useTransactions, useKyc } from "@/hooks/use-account";
-import { createDeposit, checkDeposit } from "@/lib/payments.functions";
+import { createDeposit, checkDeposit, getPagarmePublicKey } from "@/lib/payments.functions";
+import { tokenizeCard, onlyDigits } from "@/lib/pagarme-token";
 
 export const Route = createFileRoute("/carteira")({
   head: () => ({
@@ -223,28 +224,88 @@ function AddBalanceDialog({
   onOpenChange: (v: boolean) => void;
   onCredited: () => void;
 }) {
+  const { data: kyc } = useKyc();
   const [amount, setAmount] = useState("50");
+  const [cpf, setCpf] = useState("");
   const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState<"choose" | "card">("choose");
+  const [card, setCard] = useState({ number: "", holder: "", exp: "", cvv: "" });
   const [pix, setPix] = useState<{ paymentId: string; qrCode: string | null } | null>(null);
 
-  async function start(method: "pix" | "credit_card") {
+  useEffect(() => {
+    if (kyc?.cpf) setCpf(kyc.cpf);
+  }, [kyc?.cpf]);
+
+  function parsedAmount() {
     const value = Number(amount.replace(",", "."));
     if (!Number.isFinite(value) || value < 5) {
       toast.error("Valor mínimo de R$ 5,00");
+      return null;
+    }
+    if (onlyDigits(cpf).length !== 11) {
+      toast.error("Informe um CPF válido");
+      return null;
+    }
+    return value;
+  }
+
+  async function startPix() {
+    const value = parsedAmount();
+    if (value === null) return;
+    setBusy(true);
+    try {
+      const res = await createDeposit({ data: { amount: value, method: "pix", cpf } });
+      setPix({ paymentId: res.paymentId, qrCode: res.qrCode });
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível gerar o PIX");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function payCard() {
+    const value = parsedAmount();
+    if (value === null) return;
+    const [mm, yy] = card.exp.split("/").map((s) => onlyDigits(s));
+    if (!mm || !yy || Number(mm) < 1 || Number(mm) > 12) {
+      toast.error("Validade inválida (MM/AA)");
       return;
     }
-    if (method === "credit_card") {
-      toast("Pagamento com cartão", {
-        description: "Em processamento — use PIX para crédito imediato.",
-      });
+    if (onlyDigits(card.number).length < 13 || card.holder.trim().length < 3 || card.cvv.length < 3) {
+      toast.error("Confira os dados do cartão");
       return;
     }
     setBusy(true);
     try {
-      const res = await createDeposit({ data: { amount: value, method } });
-      setPix({ paymentId: res.paymentId, qrCode: res.qrCode });
+      const { publicKey } = await getPagarmePublicKey();
+      if (!publicKey) throw new Error("Pagamento por cartão indisponível no momento");
+      const token = await tokenizeCard(publicKey, {
+        number: onlyDigits(card.number),
+        holder_name: card.holder.trim(),
+        exp_month: Number(mm),
+        exp_year: Number(yy.length === 2 ? `20${yy}` : yy),
+        cvv: onlyDigits(card.cvv),
+      });
+      const res = await createDeposit({
+        data: {
+          amount: value,
+          method: "credit_card",
+          cardToken: token,
+          cpf,
+          holderName: card.holder.trim(),
+        },
+      });
+      const check = await checkDeposit({ data: { paymentId: res.paymentId } });
+      if (check.status === "paid") {
+        toast.success("Pagamento aprovado! Saldo adicionado.");
+        onCredited();
+        reset();
+        onOpenChange(false);
+      } else {
+        toast.error("Pagamento não aprovado pelo banco emissor");
+      }
     } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Não foi possível gerar o PIX");
+      toast.error(e instanceof Error ? e.message : "Falha no pagamento com cartão");
     } finally {
       setBusy(false);
     }
@@ -258,7 +319,7 @@ function AddBalanceDialog({
       if (res.status === "paid") {
         toast.success("Saldo adicionado!");
         onCredited();
-        setPix(null);
+        reset();
         onOpenChange(false);
       } else {
         toast("Pagamento ainda não identificado", { description: "Tente novamente em instantes." });
@@ -270,15 +331,43 @@ function AddBalanceDialog({
     }
   }
 
+  function reset() {
+    setPix(null);
+    setMode("choose");
+    setCard({ number: "", holder: "", exp: "", cvv: "" });
+  }
+
   return (
-    <Dialog open={open} onOpenChange={(v) => (onOpenChange(v), v || setPix(null))}>
-      <DialogContent className="max-w-sm rounded-2xl">
+    <Dialog open={open} onOpenChange={(v) => (onOpenChange(v), v || reset())}>
+      <DialogContent className="max-h-[85dvh] max-w-sm overflow-y-auto rounded-2xl">
         <DialogHeader>
           <DialogTitle>Adicionar saldo</DialogTitle>
           <DialogDescription>Escolha o valor e a forma de pagamento.</DialogDescription>
         </DialogHeader>
 
-        {!pix ? (
+        {pix ? (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Copie o código PIX abaixo e pague no seu banco. O saldo entra automaticamente.
+            </p>
+            <div className="max-h-32 overflow-auto break-all rounded-xl bg-muted p-3 text-[11px]">
+              {pix.qrCode ?? "Código indisponível"}
+            </div>
+            <Button
+              variant="outline"
+              className="w-full gap-2 rounded-2xl"
+              onClick={() => {
+                navigator.clipboard.writeText(pix.qrCode ?? "");
+                toast.success("Código PIX copiado");
+              }}
+            >
+              <Copy className="h-4 w-4" /> Copiar código
+            </Button>
+            <Button disabled={busy} onClick={confirm} className="w-full rounded-2xl py-6">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Já paguei, verificar"}
+            </Button>
+          </div>
+        ) : (
           <div className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="amount">Valor (R$)</Label>
@@ -300,39 +389,85 @@ function AddBalanceDialog({
                 ))}
               </div>
             </div>
-            <Button disabled={busy} onClick={() => start("pix")} className="w-full rounded-2xl py-6">
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar com PIX"}
-            </Button>
-            <Button
-              variant="outline"
-              disabled={busy}
-              onClick={() => start("credit_card")}
-              className="w-full rounded-2xl py-6"
-            >
-              Cartão de crédito
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Copie o código PIX abaixo e pague no seu banco. O saldo entra automaticamente.
-            </p>
-            <div className="max-h-32 overflow-auto break-all rounded-xl bg-muted p-3 text-[11px]">
-              {pix.qrCode ?? "Código indisponível"}
+
+            <div className="space-y-1.5">
+              <Label htmlFor="cpf">CPF do pagador</Label>
+              <Input
+                id="cpf"
+                inputMode="numeric"
+                placeholder="000.000.000-00"
+                value={cpf}
+                onChange={(e) => setCpf(e.target.value)}
+              />
             </div>
-            <Button
-              variant="outline"
-              className="w-full gap-2 rounded-2xl"
-              onClick={() => {
-                navigator.clipboard.writeText(pix.qrCode ?? "");
-                toast.success("Código PIX copiado");
-              }}
-            >
-              <Copy className="h-4 w-4" /> Copiar código
-            </Button>
-            <Button disabled={busy} onClick={confirm} className="w-full rounded-2xl py-6">
-              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Já paguei, verificar"}
-            </Button>
+
+            {mode === "choose" ? (
+              <>
+                <Button disabled={busy} onClick={startPix} className="w-full rounded-2xl py-6">
+                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar com PIX"}
+                </Button>
+                <Button
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => setMode("card")}
+                  className="w-full rounded-2xl py-6"
+                >
+                  Cartão de crédito
+                </Button>
+              </>
+            ) : (
+              <div className="space-y-3 border-t border-border pt-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="c-number">Número do cartão</Label>
+                  <Input
+                    id="c-number"
+                    inputMode="numeric"
+                    placeholder="0000 0000 0000 0000"
+                    value={card.number}
+                    onChange={(e) => setCard({ ...card, number: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="c-holder">Nome impresso no cartão</Label>
+                  <Input
+                    id="c-holder"
+                    value={card.holder}
+                    onChange={(e) => setCard({ ...card, holder: e.target.value })}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="c-exp">Validade</Label>
+                    <Input
+                      id="c-exp"
+                      placeholder="MM/AA"
+                      value={card.exp}
+                      onChange={(e) => setCard({ ...card, exp: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="c-cvv">CVV</Label>
+                    <Input
+                      id="c-cvv"
+                      inputMode="numeric"
+                      value={card.cvv}
+                      onChange={(e) => setCard({ ...card, cvv: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <Button disabled={busy} onClick={payCard} className="w-full rounded-2xl py-6">
+                  {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar com cartão"}
+                </Button>
+                <Button
+                  variant="ghost"
+                  disabled={busy}
+                  onClick={() => setMode("choose")}
+                  className="w-full rounded-2xl"
+                >
+                  Voltar
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </DialogContent>
