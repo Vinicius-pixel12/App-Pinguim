@@ -151,9 +151,11 @@ export function ConverseModal({
           </Button>
           <Button
             onClick={handlePay}
+            disabled={busy}
             className="flex-1 bg-success text-success-foreground hover:bg-success/90"
           >
-            <CheckCircle2 className="mr-1 h-4 w-4" />
+            {busy ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <CheckCircle2 className="mr-1 h-4 w-4" />}
+
             Pagar R$ {PRICE.toFixed(2).replace(".", ",")}
           </Button>
         </div>
