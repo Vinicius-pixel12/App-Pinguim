@@ -17,7 +17,9 @@ import {
 } from "lucide-react";
 import { useMyPrivacy } from "@/lib/privacy";
 import { useAppBackground } from "@/lib/app-background";
+import { useIsAdmin } from "@/hooks/use-account";
 import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogAction,
