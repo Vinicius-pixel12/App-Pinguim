@@ -26,14 +26,22 @@ export const createDeposit = createServerFn({ method: "POST" })
       .maybeSingle();
     const { data: kyc } = await supabase
       .from("kyc_verifications")
-      .select("cpf, full_name")
+      .select("cpf, full_name, status")
       .eq("user_id", userId)
       .maybeSingle();
 
-    const document = (data.cpf ?? kyc?.cpf ?? "").replace(/\D/g, "");
-    if (document.length !== 11) {
-      throw new Error("Informe um CPF válido para concluir o pagamento");
+    const kycCpf = (kyc?.cpf ?? "").replace(/\D/g, "");
+    if (kycCpf.length !== 11) {
+      throw new Error(
+        "Cadastre sua verificação de identidade (CPF) antes de realizar o pagamento",
+      );
     }
+    const informed = (data.cpf ?? kycCpf).replace(/\D/g, "");
+    if (informed !== kycCpf) {
+      throw new Error("O CPF do pagamento não corresponde ao CPF verificado da sua conta");
+    }
+    const document = kycCpf;
+
 
     const name =
       data.holderName || kyc?.full_name || profile?.display_name || profile?.username || "Usuário Pinguim";
