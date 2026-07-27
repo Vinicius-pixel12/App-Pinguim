@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerificacaoRouteImport } from './routes/verificacao'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as ExplorarRouteImport } from './routes/explorar'
@@ -29,6 +30,11 @@ import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configura
 import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
 import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
 
+const VerificacaoRoute = VerificacaoRouteImport.update({
+  id: '/verificacao',
+  path: '/verificacao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/verificacao': typeof VerificacaoRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/verificacao': typeof VerificacaoRoute
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/perfil/$username': typeof PerfilUsernameRoute
   '/configuracoes': typeof ConfiguracoesIndexRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/explorar': typeof ExplorarRoute
   '/notificacoes': typeof NotificacoesRoute
   '/perfil': typeof PerfilRouteWithChildren
+  '/verificacao': typeof VerificacaoRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
@@ -201,6 +210,7 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/verificacao'
     | '/configuracoes/legal'
     | '/configuracoes/sobre'
     | '/configuracoes/suporte'
@@ -221,6 +231,7 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/verificacao'
     | '/configuracoes/sobre'
     | '/perfil/$username'
     | '/configuracoes'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/explorar'
     | '/notificacoes'
     | '/perfil'
+    | '/verificacao'
     | '/configuracoes/legal'
     | '/configuracoes/sobre'
     | '/configuracoes/suporte'
@@ -262,11 +274,19 @@ export interface RootRouteChildren {
   ExplorarRoute: typeof ExplorarRoute
   NotificacoesRoute: typeof NotificacoesRoute
   PerfilRoute: typeof PerfilRouteWithChildren
+  VerificacaoRoute: typeof VerificacaoRoute
   ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verificacao': {
+      id: '/verificacao'
+      path: '/verificacao'
+      fullPath: '/verificacao'
+      preLoaderRoute: typeof VerificacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/perfil': {
       id: '/perfil'
       path: '/perfil'
@@ -468,6 +488,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExplorarRoute: ExplorarRoute,
   NotificacoesRoute: NotificacoesRoute,
   PerfilRoute: PerfilRouteWithChildren,
+  VerificacaoRoute: VerificacaoRoute,
   ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
 }
 export const routeTree = rootRouteImport
