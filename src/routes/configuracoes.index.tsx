@@ -11,6 +11,9 @@ import {
   LogOut,
   ImageIcon,
   Trash2,
+  ShieldCheck,
+  Shield,
+
 } from "lucide-react";
 import { useMyPrivacy } from "@/lib/privacy";
 import { useAppBackground } from "@/lib/app-background";
