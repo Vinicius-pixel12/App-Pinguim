@@ -48,6 +48,9 @@ export const Route = createFileRoute("/carteira")({
 
 const MIN_WITHDRAW = 50;
 const brl = (v: number) => `R$ ${Number(v ?? 0).toFixed(2).replace(".", ",")}`;
+const maskCpf = (v: string) =>
+  v.length === 11 ? `${v.slice(0, 3)}.***.***-${v.slice(9)}` : v;
+
 
 function Carteira() {
   const navigate = useNavigate();
@@ -232,9 +235,11 @@ function AddBalanceDialog({
   const [card, setCard] = useState({ number: "", holder: "", exp: "", cvv: "" });
   const [pix, setPix] = useState<{ paymentId: string; qrCode: string | null } | null>(null);
 
+  const kycCpf = onlyDigits(kyc?.cpf ?? "");
+
   useEffect(() => {
-    if (kyc?.cpf) setCpf(kyc.cpf);
-  }, [kyc?.cpf]);
+    if (kycCpf) setCpf(kycCpf);
+  }, [kycCpf]);
 
   function parsedAmount() {
     const value = Number(amount.replace(",", "."));
@@ -242,10 +247,15 @@ function AddBalanceDialog({
       toast.error("Valor mínimo de R$ 5,00");
       return null;
     }
-    if (onlyDigits(cpf).length !== 11) {
-      toast.error("Informe um CPF válido");
+    if (kycCpf.length !== 11) {
+      toast.error("Cadastre sua verificação de identidade antes de pagar");
       return null;
     }
+    if (onlyDigits(cpf) !== kycCpf) {
+      toast.error("O CPF do pagamento precisa ser o mesmo da sua verificação");
+      return null;
+    }
+
     return value;
   }
 
@@ -390,25 +400,42 @@ function AddBalanceDialog({
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="cpf">CPF do pagador</Label>
-              <Input
-                id="cpf"
-                inputMode="numeric"
-                placeholder="000.000.000-00"
-                value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
-              />
-            </div>
-
+            {kycCpf ? (
+              <div className="space-y-1.5">
+                <Label htmlFor="cpf">CPF do pagador (verificado)</Label>
+                <Input id="cpf" value={maskCpf(kycCpf)} readOnly disabled />
+                <p className="text-[11px] text-muted-foreground">
+                  O pagamento só é aceito no CPF cadastrado na sua verificação de identidade.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3 rounded-2xl bg-warning/10 p-4">
+                <p className="text-sm font-medium text-warning">
+                  Cadastre sua verificação de identidade antes de pagar
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Precisamos confirmar que o CPF do pagamento é o mesmo da sua conta.
+                </p>
+                <Button asChild variant="outline" className="w-full rounded-2xl">
+                  <Link to="/verificacao" onClick={() => onOpenChange(false)}>
+                    Fazer verificação
+                  </Link>
+                </Button>
+              </div>
+            )}
             {mode === "choose" ? (
               <>
-                <Button disabled={busy} onClick={startPix} className="w-full rounded-2xl py-6">
+                <Button
+                  disabled={busy || !kycCpf}
+                  onClick={startPix}
+                  className="w-full rounded-2xl py-6"
+                >
                   {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar com PIX"}
                 </Button>
                 <Button
                   variant="outline"
-                  disabled={busy}
+                  disabled={busy || !kycCpf}
+
                   onClick={() => setMode("card")}
                   className="w-full rounded-2xl py-6"
                 >
