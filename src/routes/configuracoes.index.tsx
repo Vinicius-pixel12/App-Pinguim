@@ -35,7 +35,9 @@ export const Route = createFileRoute("/configuracoes/")({
 });
 
 function Configuracoes() {
+  const { data: isAdmin } = useIsAdmin();
   const [privacy, setPrivacy] = useMyPrivacy();
+
   const [bg, setBg] = useAppBackground();
   const [pendingBg, setPendingBg] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
