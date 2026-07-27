@@ -26,6 +26,7 @@ import { Route as ConfiguracoesSuporteIndexRouteImport } from './routes/configur
 import { Route as ConfiguracoesLegalIndexRouteImport } from './routes/configuracoes.legal.index'
 import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configuracoes.suporte.$slug'
 import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
+import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
 
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
@@ -114,6 +115,12 @@ const ConfiguracoesLegalSlugRoute = ConfiguracoesLegalSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ConfiguracoesLegalRoute,
 } as any)
+const ApiPublicWebhooksPagarmeRoute =
+  ApiPublicWebhooksPagarmeRouteImport.update({
+    id: '/api/public/webhooks/pagarme',
+    path: '/api/public/webhooks/pagarme',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -149,6 +157,7 @@ export interface FileRoutesByTo {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -169,6 +178,7 @@ export interface FileRoutesById {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
+    | '/api/public/webhooks/pagarme'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal'
     | '/configuracoes/suporte'
+    | '/api/public/webhooks/pagarme'
   id:
     | '__root__'
     | '/'
@@ -225,6 +237,7 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
+    | '/api/public/webhooks/pagarme'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -236,6 +249,7 @@ export interface RootRouteChildren {
   ExplorarRoute: typeof ExplorarRoute
   NotificacoesRoute: typeof NotificacoesRoute
   PerfilRoute: typeof PerfilRouteWithChildren
+  ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -359,6 +373,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesLegalSlugRouteImport
       parentRoute: typeof ConfiguracoesLegalRoute
     }
+    '/api/public/webhooks/pagarme': {
+      id: '/api/public/webhooks/pagarme'
+      path: '/api/public/webhooks/pagarme'
+      fullPath: '/api/public/webhooks/pagarme'
+      preLoaderRoute: typeof ApiPublicWebhooksPagarmeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -426,6 +447,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExplorarRoute: ExplorarRoute,
   NotificacoesRoute: NotificacoesRoute,
   PerfilRoute: PerfilRouteWithChildren,
+  ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

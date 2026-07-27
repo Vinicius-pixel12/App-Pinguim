@@ -182,3 +182,7 @@ export const reviewKyc = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+export const getPagarmePublicKey = createServerFn({ method: "GET" }).handler(async () => ({
+  publicKey: process.env.PAGARME_PUBLIC_KEY ?? "",
+}));
