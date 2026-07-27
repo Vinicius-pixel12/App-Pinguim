@@ -16,6 +16,7 @@ import { Route as EditarPerfilRouteImport } from './routes/editar-perfil'
 import { Route as ConversasRouteImport } from './routes/conversas'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as CarteiraRouteImport } from './routes/carteira'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as PerfilUsernameRouteImport } from './routes/perfil.$username'
@@ -61,6 +62,11 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
 const CarteiraRoute = CarteiraRouteImport.update({
   id: '/carteira',
   path: '/carteira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -124,6 +130,7 @@ const ApiPublicWebhooksPagarmeRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/carteira': typeof CarteiraRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/conversas': typeof ConversasRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/carteira': typeof CarteiraRoute
   '/conversas': typeof ConversasRoute
   '/editar-perfil': typeof EditarPerfilRoute
@@ -162,6 +170,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/carteira': typeof CarteiraRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/conversas': typeof ConversasRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
     | '/carteira'
     | '/configuracoes'
     | '/conversas'
@@ -204,6 +214,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/carteira'
     | '/conversas'
     | '/editar-perfil'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/auth'
     | '/carteira'
     | '/configuracoes'
     | '/conversas'
@@ -242,6 +254,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   CarteiraRoute: typeof CarteiraRoute
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
   ConversasRoute: typeof ConversasRoute
@@ -301,6 +314,13 @@ declare module '@tanstack/react-router' {
       path: '/carteira'
       fullPath: '/carteira'
       preLoaderRoute: typeof CarteiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -440,6 +460,7 @@ const PerfilRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   CarteiraRoute: CarteiraRoute,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
   ConversasRoute: ConversasRoute,
