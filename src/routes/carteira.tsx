@@ -232,9 +232,11 @@ function AddBalanceDialog({
   const [card, setCard] = useState({ number: "", holder: "", exp: "", cvv: "" });
   const [pix, setPix] = useState<{ paymentId: string; qrCode: string | null } | null>(null);
 
+  const kycCpf = onlyDigits(kyc?.cpf ?? "");
+
   useEffect(() => {
-    if (kyc?.cpf) setCpf(kyc.cpf);
-  }, [kyc?.cpf]);
+    if (kycCpf) setCpf(kycCpf);
+  }, [kycCpf]);
 
   function parsedAmount() {
     const value = Number(amount.replace(",", "."));
@@ -242,10 +244,15 @@ function AddBalanceDialog({
       toast.error("Valor mínimo de R$ 5,00");
       return null;
     }
-    if (onlyDigits(cpf).length !== 11) {
-      toast.error("Informe um CPF válido");
+    if (kycCpf.length !== 11) {
+      toast.error("Cadastre sua verificação de identidade antes de pagar");
       return null;
     }
+    if (onlyDigits(cpf) !== kycCpf) {
+      toast.error("O CPF do pagamento precisa ser o mesmo da sua verificação");
+      return null;
+    }
+
     return value;
   }
 
