@@ -48,6 +48,9 @@ export const Route = createFileRoute("/carteira")({
 
 const MIN_WITHDRAW = 50;
 const brl = (v: number) => `R$ ${Number(v ?? 0).toFixed(2).replace(".", ",")}`;
+const maskCpf = (v: string) =>
+  v.length === 11 ? `${v.slice(0, 3)}.***.***-${v.slice(9)}` : v;
+
 
 function Carteira() {
   const navigate = useNavigate();
