@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Heart, MessageCircle, Share2, Trash2 } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import {
@@ -55,13 +56,20 @@ export function PostViewer({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-md rounded-2xl p-0 overflow-hidden">
           <DialogHeader className="border-b border-border p-3">
-            <DialogTitle className="flex items-center gap-2 text-sm">
-              <img
-                src={post.user.avatar}
-                alt=""
-                className="h-8 w-8 rounded-full object-cover"
-              />
-              <span className="font-semibold">{post.user.username}</span>
+            <DialogTitle className="text-sm">
+              <Link
+                to="/perfil/$username"
+                params={{ username: post.user.username }}
+                onClick={() => onOpenChange(false)}
+                className="flex items-center gap-2 hover:opacity-80"
+              >
+                <img
+                  src={post.user.avatar}
+                  alt=""
+                  className="h-8 w-8 rounded-full object-cover"
+                />
+                <span className="font-semibold">{post.user.username}</span>
+              </Link>
             </DialogTitle>
           </DialogHeader>
 
