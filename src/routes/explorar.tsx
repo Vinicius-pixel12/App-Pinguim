@@ -28,6 +28,7 @@ export const Route = createFileRoute("/explorar")({
 
 function Explorar() {
   const [viewing, setViewing] = useState<MockPost | null>(null);
+  const [query, setQuery] = useState("");
 
   // Apenas perfis públicos aparecem no Explorar
   const publicUsers = useMemo(() => users.filter((u) => !u.isPrivate), []);
