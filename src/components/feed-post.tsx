@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
 import { SharePostDialog } from "@/components/share-post-dialog";
 import { GeminiIcon } from "@/components/gemini-icon";
+import { PeaceHandIcon } from "@/components/peace-hand-icon";
 import { openGeminiWithImage } from "@/lib/gemini";
 import { isPostSaved, togglePostSaved } from "@/lib/saved-posts";
 import { toast } from "sonner";
@@ -100,15 +101,11 @@ export function FeedPost({
               </IconBtn>
             )}
             <IconBtn aria-label="Curtir" onClick={() => setLiked((v) => !v)}>
-              <span
-                className={`text-2xl leading-none transition-transform ${
+              <PeaceHandIcon
+                className={`h-6 w-6 transition-transform ${
                   liked ? "scale-110" : "opacity-90"
-                }`}
-                role="img"
-                aria-label="Mão com dois dedos levantados"
-              >
-                ✌️
-              </span>
+                } text-foreground`}
+              />
             </IconBtn>
             <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
               <BookOpen className="h-6 w-6 text-foreground" strokeWidth={1.75} />
