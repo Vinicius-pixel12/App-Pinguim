@@ -203,7 +203,7 @@ export function CommentsSheet({
       >
         <SheetHeader className="shrink-0 border-b border-border p-4 text-center">
           <SheetTitle className="text-base font-semibold">
-            {total} comentário{total === 1 ? "" : "s"}
+            {total} anotaç{total === 1 ? "ão" : "ões"}
           </SheetTitle>
         </SheetHeader>
 
@@ -276,7 +276,7 @@ export function CommentsSheet({
                 if (e.key === "Enter") submit();
               }}
               placeholder={
-                replyTo ? `Responder a @${replyTo.username}...` : "Adicione um comentário..."
+                replyTo ? `Responder a @${replyTo.username}...` : "Adicione uma anotação..."
               }
               className="flex-1 rounded-full"
             />
@@ -299,7 +299,7 @@ export function CommentsSheet({
         <DialogContent className="max-w-sm rounded-2xl p-0">
           <DialogHeader className="border-b border-border p-4">
             <DialogTitle className="text-center text-base font-semibold">
-              Curtidas
+              Reações
             </DialogTitle>
           </DialogHeader>
           <div className="max-h-[60vh] overflow-y-auto p-2">
@@ -382,7 +382,7 @@ function CommentRow({
           <span>{time}</span>
           {likes > 0 && (
             <button onClick={onShowLikes} className="hover:underline">
-              {likes} curtida{likes === 1 ? "" : "s"}
+              {likes} reaç{likes === 1 ? "ão" : "ões"}
             </button>
           )}
           <button onClick={onReply} className="font-semibold">

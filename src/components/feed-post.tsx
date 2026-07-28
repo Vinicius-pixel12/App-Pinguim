@@ -155,7 +155,7 @@ export function FeedPost({
           onClick={() => setLikesOpen(true)}
           className="text-sm font-semibold text-foreground hover:underline"
         >
-          {likeCount.toLocaleString("pt-BR")} curtidas
+          {likeCount.toLocaleString("pt-BR")} reações
         </button>
 
         <p className="text-sm text-foreground">
@@ -167,7 +167,7 @@ export function FeedPost({
             onClick={() => setCommentsOpen(true)}
             className="text-sm text-muted-foreground"
           >
-            Ver todos os {post.comments} comentários
+            Ver todos os {post.comments} anotações
           </button>
         )}
         <div className="pt-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
@@ -185,7 +185,7 @@ export function FeedPost({
         <DialogContent className="max-w-sm rounded-2xl p-0">
           <DialogHeader className="border-b border-border p-4">
             <DialogTitle className="text-center text-base font-semibold">
-              Curtidas
+              Reações
             </DialogTitle>
           </DialogHeader>
           <div className="max-h-[60vh] overflow-y-auto p-2">
