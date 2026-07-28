@@ -16,6 +16,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
 import { AppBackground } from "@/components/app-background";
 import { useAppBackground } from "@/lib/app-background";
+import { supabase } from "@/integrations/supabase/client";
 
 const HIDE_NAV_ROUTES = new Set(["/auth", "/onboarding"]);
 
@@ -135,6 +136,16 @@ function RootComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const showNav = !HIDE_NAV_ROUTES.has(pathname);
   const [bg] = useAppBackground();
+  const router = useRouter();
+
+  useEffect(() => {
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      router.invalidate();
+      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

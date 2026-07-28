@@ -67,6 +67,21 @@ function AuthPage() {
     }
   }
 
+  async function forgotPassword() {
+    if (!email) {
+      toast.error("Informe seu e-mail para recuperar a senha");
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Enviamos um link de recuperação para seu e-mail");
+  }
+
   async function google() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
@@ -135,6 +150,16 @@ function AuthPage() {
           >
             Continuar com Google
           </Button>
+
+          {mode === "login" && (
+            <button
+              type="button"
+              onClick={forgotPassword}
+              className="w-full text-center text-sm text-muted-foreground"
+            >
+              Esqueci minha senha
+            </button>
+          )}
 
           <button
             type="button"
