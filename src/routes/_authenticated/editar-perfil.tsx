@@ -33,10 +33,19 @@ function EditarPerfil() {
   const set = <K extends keyof ProfileData>(k: K, v: ProfileData[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const onAvatar = (f: File) => {
-    const reader = new FileReader();
-    reader.onload = () => set("avatar", String(reader.result));
-    reader.readAsDataURL(f);
+  const onAvatar = async (f: File) => {
+    setAvatarUploading(true);
+    try {
+      const { url, remote } = await uploadImageWithFallback(f, "avatar");
+      set("avatar", url);
+      if (!remote) {
+        toast.warning("Imagem salva localmente: armazenamento em nuvem não configurado.");
+      }
+    } catch {
+      toast.error("Não foi possível carregar a imagem");
+    } finally {
+      setAvatarUploading(false);
+    }
   };
 
   const onSelfie = () => {
