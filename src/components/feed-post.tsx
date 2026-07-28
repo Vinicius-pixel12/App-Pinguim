@@ -100,7 +100,7 @@ export function FeedPost({
               </IconBtn>
             )}
             <IconBtn aria-label="Curtir" onClick={() => setLiked((v) => !v)}>
-              <Heart
+              <ThumbsUp
                 className={`h-6 w-6 ${liked ? "text-destructive" : "text-foreground"}`}
                 fill={liked ? "currentColor" : "none"}
                 strokeWidth={1.75}
