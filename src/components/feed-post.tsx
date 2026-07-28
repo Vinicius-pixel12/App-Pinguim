@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { CommentsSheet } from "@/components/comments-sheet";
 import { SharePostDialog } from "@/components/share-post-dialog";
 import { GeminiIcon } from "@/components/gemini-icon";
+import { PeaceHandIcon } from "@/components/peace-hand-icon";
 import { openGeminiWithImage } from "@/lib/gemini";
 import { isPostSaved, togglePostSaved } from "@/lib/saved-posts";
 import { toast } from "sonner";
