@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ThumbsUp, MessageCircle, Send, Bookmark, Hand } from "lucide-react";
+import { MessageCircle, Send, Bookmark, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import { users, currentUser } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
@@ -100,11 +100,15 @@ export function FeedPost({
               </IconBtn>
             )}
             <IconBtn aria-label="Curtir" onClick={() => setLiked((v) => !v)}>
-              <ThumbsUp
-                className={`h-6 w-6 ${liked ? "text-destructive" : "text-foreground"}`}
-                fill={liked ? "currentColor" : "none"}
-                strokeWidth={1.75}
-              />
+              <span
+                className={`text-2xl leading-none transition-transform ${
+                  liked ? "scale-110" : "opacity-90"
+                }`}
+                role="img"
+                aria-label="Curtir"
+              >
+                ✌️
+              </span>
             </IconBtn>
             <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
               <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.75} />
