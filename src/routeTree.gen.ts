@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ExplorarRouteImport } from './routes/explorar'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as PerfilUsernameRouteImport } from './routes/perfil.$username'
@@ -46,6 +47,10 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -78,41 +83,41 @@ const ConfiguracoesLegalRoute = ConfiguracoesLegalRouteImport.update({
 } as any)
 const AuthenticatedVerificacaoRoute =
   AuthenticatedVerificacaoRouteImport.update({
-    id: '/_authenticated/verificacao',
+    id: '/verificacao',
     path: '/verificacao',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
-  id: '/_authenticated/perfil',
+  id: '/perfil',
   path: '/perfil',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedNotificacoesRoute =
   AuthenticatedNotificacoesRouteImport.update({
-    id: '/_authenticated/notificacoes',
+    id: '/notificacoes',
     path: '/notificacoes',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedEditarPerfilRoute =
   AuthenticatedEditarPerfilRouteImport.update({
-    id: '/_authenticated/editar-perfil',
+    id: '/editar-perfil',
     path: '/editar-perfil',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedConversasRoute = AuthenticatedConversasRouteImport.update({
-  id: '/_authenticated/conversas',
+  id: '/conversas',
   path: '/conversas',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
-  id: '/_authenticated/carteira',
+  id: '/carteira',
   path: '/carteira',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/_authenticated/admin',
+  id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ConfiguracoesSuporteIndexRoute =
   ConfiguracoesSuporteIndexRouteImport.update({
@@ -189,6 +194,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/explorar': typeof ExplorarRoute
@@ -257,6 +263,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/auth'
     | '/configuracoes'
     | '/explorar'
@@ -281,16 +288,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
   ExplorarRoute: typeof ExplorarRoute
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
-  AuthenticatedConversasRoute: typeof AuthenticatedConversasRoute
-  AuthenticatedEditarPerfilRoute: typeof AuthenticatedEditarPerfilRoute
-  AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
-  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
-  AuthenticatedVerificacaoRoute: typeof AuthenticatedVerificacaoRoute
   PerfilUsernameRoute: typeof PerfilUsernameRoute
   ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
 }
@@ -316,6 +317,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -365,49 +373,49 @@ declare module '@tanstack/react-router' {
       path: '/verificacao'
       fullPath: '/verificacao'
       preLoaderRoute: typeof AuthenticatedVerificacaoRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/perfil': {
       id: '/_authenticated/perfil'
       path: '/perfil'
       fullPath: '/perfil'
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/notificacoes': {
       id: '/_authenticated/notificacoes'
       path: '/notificacoes'
       fullPath: '/notificacoes'
       preLoaderRoute: typeof AuthenticatedNotificacoesRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/editar-perfil': {
       id: '/_authenticated/editar-perfil'
       path: '/editar-perfil'
       fullPath: '/editar-perfil'
       preLoaderRoute: typeof AuthenticatedEditarPerfilRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/conversas': {
       id: '/_authenticated/conversas'
       path: '/conversas'
       fullPath: '/conversas'
       preLoaderRoute: typeof AuthenticatedConversasRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/carteira': {
       id: '/_authenticated/carteira'
       path: '/carteira'
       fullPath: '/carteira'
       preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/configuracoes/suporte/': {
       id: '/configuracoes/suporte/'
@@ -446,6 +454,29 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
+  AuthenticatedConversasRoute: typeof AuthenticatedConversasRoute
+  AuthenticatedEditarPerfilRoute: typeof AuthenticatedEditarPerfilRoute
+  AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
+  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedVerificacaoRoute: typeof AuthenticatedVerificacaoRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
+  AuthenticatedConversasRoute: AuthenticatedConversasRoute,
+  AuthenticatedEditarPerfilRoute: AuthenticatedEditarPerfilRoute,
+  AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
+  AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedVerificacaoRoute: AuthenticatedVerificacaoRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface ConfiguracoesLegalRouteChildren {
   ConfiguracoesLegalSlugRoute: typeof ConfiguracoesLegalSlugRoute
@@ -493,16 +524,10 @@ const ConfiguracoesRouteWithChildren = ConfiguracoesRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
   ExplorarRoute: ExplorarRoute,
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
-  AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
-  AuthenticatedConversasRoute: AuthenticatedConversasRoute,
-  AuthenticatedEditarPerfilRoute: AuthenticatedEditarPerfilRoute,
-  AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
-  AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
-  AuthenticatedVerificacaoRoute: AuthenticatedVerificacaoRoute,
   PerfilUsernameRoute: PerfilUsernameRoute,
   ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
 }
