@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ThumbsUp, MessageCircle, Send, Bookmark, Hand } from "lucide-react";
+import { MessageCircle, Send, Bookmark, Hand } from "lucide-react";
 import type { MockPost } from "@/lib/mock-data";
 import { users, currentUser } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
