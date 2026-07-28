@@ -105,7 +105,7 @@ export function FeedPost({
                   liked ? "scale-110" : "opacity-90"
                 }`}
                 role="img"
-                aria-label="Curtir"
+                aria-label="Mão com dois dedos levantados"
               >
                 ✌️
               </span>
