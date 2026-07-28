@@ -13,6 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { useProfile, type ProfileData } from "@/lib/profile";
 import { users as mockUsers } from "@/lib/mock-data";
+import { uploadImageWithFallback } from "@/lib/upload-image";
 
 export const Route = createFileRoute("/_authenticated/editar-perfil")({
   head: () => ({ meta: [{ title: "Editar perfil — Pinguim" }] }),
@@ -24,6 +25,7 @@ function EditarPerfil() {
   const [form, setForm] = useState<ProfileData>(saved);
   const [newBlock, setNewBlock] = useState("");
   const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const galleryRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const selfieRef = useRef<HTMLInputElement>(null);
@@ -140,7 +142,7 @@ function EditarPerfil() {
           />
           </div>
           <button onClick={() => setAvatarPickerOpen(true)} className="text-sm font-medium text-primary">
-            Alterar foto de perfil
+            {avatarUploading ? "Enviando…" : "Alterar foto de perfil"}
           </button>
         </div>
 
