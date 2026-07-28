@@ -9,56 +9,31 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as VerificacaoRouteImport } from './routes/verificacao'
-import { Route as PerfilRouteImport } from './routes/perfil'
-import { Route as NotificacoesRouteImport } from './routes/notificacoes'
 import { Route as ExplorarRouteImport } from './routes/explorar'
-import { Route as EditarPerfilRouteImport } from './routes/editar-perfil'
-import { Route as ConversasRouteImport } from './routes/conversas'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
-import { Route as CarteiraRouteImport } from './routes/carteira'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes.index'
 import { Route as PerfilUsernameRouteImport } from './routes/perfil.$username'
 import { Route as ConfiguracoesSuporteRouteImport } from './routes/configuracoes.suporte'
 import { Route as ConfiguracoesSobreRouteImport } from './routes/configuracoes.sobre'
 import { Route as ConfiguracoesLegalRouteImport } from './routes/configuracoes.legal'
+import { Route as AuthenticatedVerificacaoRouteImport } from './routes/_authenticated/verificacao'
+import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedNotificacoesRouteImport } from './routes/_authenticated/notificacoes'
+import { Route as AuthenticatedEditarPerfilRouteImport } from './routes/_authenticated/editar-perfil'
+import { Route as AuthenticatedConversasRouteImport } from './routes/_authenticated/conversas'
+import { Route as AuthenticatedCarteiraRouteImport } from './routes/_authenticated/carteira'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as ConfiguracoesSuporteIndexRouteImport } from './routes/configuracoes.suporte.index'
 import { Route as ConfiguracoesLegalIndexRouteImport } from './routes/configuracoes.legal.index'
 import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configuracoes.suporte.$slug'
 import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
 import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
 
-const VerificacaoRoute = VerificacaoRouteImport.update({
-  id: '/verificacao',
-  path: '/verificacao',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PerfilRoute = PerfilRouteImport.update({
-  id: '/perfil',
-  path: '/perfil',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificacoesRoute = NotificacoesRouteImport.update({
-  id: '/notificacoes',
-  path: '/notificacoes',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ExplorarRoute = ExplorarRouteImport.update({
   id: '/explorar',
   path: '/explorar',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EditarPerfilRoute = EditarPerfilRouteImport.update({
-  id: '/editar-perfil',
-  path: '/editar-perfil',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConversasRoute = ConversasRouteImport.update({
-  id: '/conversas',
-  path: '/conversas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
@@ -66,19 +41,9 @@ const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   path: '/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CarteiraRoute = CarteiraRouteImport.update({
-  id: '/carteira',
-  path: '/carteira',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -92,9 +57,9 @@ const ConfiguracoesIndexRoute = ConfiguracoesIndexRouteImport.update({
   getParentRoute: () => ConfiguracoesRoute,
 } as any)
 const PerfilUsernameRoute = PerfilUsernameRouteImport.update({
-  id: '/$username',
-  path: '/$username',
-  getParentRoute: () => PerfilRoute,
+  id: '/perfil/$username',
+  path: '/perfil/$username',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesSuporteRoute = ConfiguracoesSuporteRouteImport.update({
   id: '/suporte',
@@ -110,6 +75,44 @@ const ConfiguracoesLegalRoute = ConfiguracoesLegalRouteImport.update({
   id: '/legal',
   path: '/legal',
   getParentRoute: () => ConfiguracoesRoute,
+} as any)
+const AuthenticatedVerificacaoRoute =
+  AuthenticatedVerificacaoRouteImport.update({
+    id: '/_authenticated/verificacao',
+    path: '/verificacao',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
+  id: '/_authenticated/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedNotificacoesRoute =
+  AuthenticatedNotificacoesRouteImport.update({
+    id: '/_authenticated/notificacoes',
+    path: '/notificacoes',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedEditarPerfilRoute =
+  AuthenticatedEditarPerfilRouteImport.update({
+    id: '/_authenticated/editar-perfil',
+    path: '/editar-perfil',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthenticatedConversasRoute = AuthenticatedConversasRouteImport.update({
+  id: '/_authenticated/conversas',
+  path: '/conversas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCarteiraRoute = AuthenticatedCarteiraRouteImport.update({
+  id: '/_authenticated/carteira',
+  path: '/carteira',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/_authenticated/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracoesSuporteIndexRoute =
   ConfiguracoesSuporteIndexRouteImport.update({
@@ -142,16 +145,16 @@ const ApiPublicWebhooksPagarmeRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/carteira': typeof CarteiraRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
-  '/conversas': typeof ConversasRoute
-  '/editar-perfil': typeof EditarPerfilRoute
   '/explorar': typeof ExplorarRoute
-  '/notificacoes': typeof NotificacoesRoute
-  '/perfil': typeof PerfilRouteWithChildren
-  '/verificacao': typeof VerificacaoRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/carteira': typeof AuthenticatedCarteiraRoute
+  '/conversas': typeof AuthenticatedConversasRoute
+  '/editar-perfil': typeof AuthenticatedEditarPerfilRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
+  '/verificacao': typeof AuthenticatedVerificacaoRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
@@ -165,15 +168,15 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/carteira': typeof CarteiraRoute
-  '/conversas': typeof ConversasRoute
-  '/editar-perfil': typeof EditarPerfilRoute
   '/explorar': typeof ExplorarRoute
-  '/notificacoes': typeof NotificacoesRoute
-  '/perfil': typeof PerfilRouteWithChildren
-  '/verificacao': typeof VerificacaoRoute
+  '/admin': typeof AuthenticatedAdminRoute
+  '/carteira': typeof AuthenticatedCarteiraRoute
+  '/conversas': typeof AuthenticatedConversasRoute
+  '/editar-perfil': typeof AuthenticatedEditarPerfilRoute
+  '/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/perfil': typeof AuthenticatedPerfilRoute
+  '/verificacao': typeof AuthenticatedVerificacaoRoute
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/perfil/$username': typeof PerfilUsernameRoute
   '/configuracoes': typeof ConfiguracoesIndexRoute
@@ -186,16 +189,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
-  '/carteira': typeof CarteiraRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
-  '/conversas': typeof ConversasRoute
-  '/editar-perfil': typeof EditarPerfilRoute
   '/explorar': typeof ExplorarRoute
-  '/notificacoes': typeof NotificacoesRoute
-  '/perfil': typeof PerfilRouteWithChildren
-  '/verificacao': typeof VerificacaoRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
+  '/_authenticated/conversas': typeof AuthenticatedConversasRoute
+  '/_authenticated/editar-perfil': typeof AuthenticatedEditarPerfilRoute
+  '/_authenticated/notificacoes': typeof AuthenticatedNotificacoesRoute
+  '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/verificacao': typeof AuthenticatedVerificacaoRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalRouteWithChildren
   '/configuracoes/sobre': typeof ConfiguracoesSobreRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteRouteWithChildren
@@ -211,13 +214,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/auth'
-    | '/carteira'
     | '/configuracoes'
+    | '/explorar'
+    | '/admin'
+    | '/carteira'
     | '/conversas'
     | '/editar-perfil'
-    | '/explorar'
     | '/notificacoes'
     | '/perfil'
     | '/verificacao'
@@ -234,12 +237,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/auth'
+    | '/explorar'
+    | '/admin'
     | '/carteira'
     | '/conversas'
     | '/editar-perfil'
-    | '/explorar'
     | '/notificacoes'
     | '/perfil'
     | '/verificacao'
@@ -254,16 +257,16 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/auth'
-    | '/carteira'
     | '/configuracoes'
-    | '/conversas'
-    | '/editar-perfil'
     | '/explorar'
-    | '/notificacoes'
-    | '/perfil'
-    | '/verificacao'
+    | '/_authenticated/admin'
+    | '/_authenticated/carteira'
+    | '/_authenticated/conversas'
+    | '/_authenticated/editar-perfil'
+    | '/_authenticated/notificacoes'
+    | '/_authenticated/perfil'
+    | '/_authenticated/verificacao'
     | '/configuracoes/legal'
     | '/configuracoes/sobre'
     | '/configuracoes/suporte'
@@ -278,61 +281,27 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
-  CarteiraRoute: typeof CarteiraRoute
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
-  ConversasRoute: typeof ConversasRoute
-  EditarPerfilRoute: typeof EditarPerfilRoute
   ExplorarRoute: typeof ExplorarRoute
-  NotificacoesRoute: typeof NotificacoesRoute
-  PerfilRoute: typeof PerfilRouteWithChildren
-  VerificacaoRoute: typeof VerificacaoRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedCarteiraRoute: typeof AuthenticatedCarteiraRoute
+  AuthenticatedConversasRoute: typeof AuthenticatedConversasRoute
+  AuthenticatedEditarPerfilRoute: typeof AuthenticatedEditarPerfilRoute
+  AuthenticatedNotificacoesRoute: typeof AuthenticatedNotificacoesRoute
+  AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
+  AuthenticatedVerificacaoRoute: typeof AuthenticatedVerificacaoRoute
+  PerfilUsernameRoute: typeof PerfilUsernameRoute
   ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/verificacao': {
-      id: '/verificacao'
-      path: '/verificacao'
-      fullPath: '/verificacao'
-      preLoaderRoute: typeof VerificacaoRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/perfil': {
-      id: '/perfil'
-      path: '/perfil'
-      fullPath: '/perfil'
-      preLoaderRoute: typeof PerfilRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notificacoes': {
-      id: '/notificacoes'
-      path: '/notificacoes'
-      fullPath: '/notificacoes'
-      preLoaderRoute: typeof NotificacoesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/explorar': {
       id: '/explorar'
       path: '/explorar'
       fullPath: '/explorar'
       preLoaderRoute: typeof ExplorarRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/editar-perfil': {
-      id: '/editar-perfil'
-      path: '/editar-perfil'
-      fullPath: '/editar-perfil'
-      preLoaderRoute: typeof EditarPerfilRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/conversas': {
-      id: '/conversas'
-      path: '/conversas'
-      fullPath: '/conversas'
-      preLoaderRoute: typeof ConversasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/configuracoes': {
@@ -342,25 +311,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/carteira': {
-      id: '/carteira'
-      path: '/carteira'
-      fullPath: '/carteira'
-      preLoaderRoute: typeof CarteiraRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -379,10 +334,10 @@ declare module '@tanstack/react-router' {
     }
     '/perfil/$username': {
       id: '/perfil/$username'
-      path: '/$username'
+      path: '/perfil/$username'
       fullPath: '/perfil/$username'
       preLoaderRoute: typeof PerfilUsernameRouteImport
-      parentRoute: typeof PerfilRoute
+      parentRoute: typeof rootRouteImport
     }
     '/configuracoes/suporte': {
       id: '/configuracoes/suporte'
@@ -404,6 +359,55 @@ declare module '@tanstack/react-router' {
       fullPath: '/configuracoes/legal'
       preLoaderRoute: typeof ConfiguracoesLegalRouteImport
       parentRoute: typeof ConfiguracoesRoute
+    }
+    '/_authenticated/verificacao': {
+      id: '/_authenticated/verificacao'
+      path: '/verificacao'
+      fullPath: '/verificacao'
+      preLoaderRoute: typeof AuthenticatedVerificacaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/perfil': {
+      id: '/_authenticated/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof AuthenticatedPerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/notificacoes': {
+      id: '/_authenticated/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/notificacoes'
+      preLoaderRoute: typeof AuthenticatedNotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/editar-perfil': {
+      id: '/_authenticated/editar-perfil'
+      path: '/editar-perfil'
+      fullPath: '/editar-perfil'
+      preLoaderRoute: typeof AuthenticatedEditarPerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/conversas': {
+      id: '/_authenticated/conversas'
+      path: '/conversas'
+      fullPath: '/conversas'
+      preLoaderRoute: typeof AuthenticatedConversasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/carteira': {
+      id: '/_authenticated/carteira'
+      path: '/carteira'
+      fullPath: '/carteira'
+      preLoaderRoute: typeof AuthenticatedCarteiraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/configuracoes/suporte/': {
       id: '/configuracoes/suporte/'
@@ -487,41 +491,21 @@ const ConfiguracoesRouteWithChildren = ConfiguracoesRoute._addFileChildren(
   ConfiguracoesRouteChildren,
 )
 
-interface PerfilRouteChildren {
-  PerfilUsernameRoute: typeof PerfilUsernameRoute
-}
-
-const PerfilRouteChildren: PerfilRouteChildren = {
-  PerfilUsernameRoute: PerfilUsernameRoute,
-}
-
-const PerfilRouteWithChildren =
-  PerfilRoute._addFileChildren(PerfilRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
-  CarteiraRoute: CarteiraRoute,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
-  ConversasRoute: ConversasRoute,
-  EditarPerfilRoute: EditarPerfilRoute,
   ExplorarRoute: ExplorarRoute,
-  NotificacoesRoute: NotificacoesRoute,
-  PerfilRoute: PerfilRouteWithChildren,
-  VerificacaoRoute: VerificacaoRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedCarteiraRoute: AuthenticatedCarteiraRoute,
+  AuthenticatedConversasRoute: AuthenticatedConversasRoute,
+  AuthenticatedEditarPerfilRoute: AuthenticatedEditarPerfilRoute,
+  AuthenticatedNotificacoesRoute: AuthenticatedNotificacoesRoute,
+  AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
+  AuthenticatedVerificacaoRoute: AuthenticatedVerificacaoRoute,
+  PerfilUsernameRoute: PerfilUsernameRoute,
   ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

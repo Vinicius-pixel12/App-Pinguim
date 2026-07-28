@@ -8,7 +8,7 @@ import { useSession, useIsAdmin } from "@/hooks/use-account";
 import { Button } from "@/components/ui/button";
 import { reviewKyc, payoutWithdraw } from "@/lib/payments.functions";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Painel administrativo — Pinguim" },

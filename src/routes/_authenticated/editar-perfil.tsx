@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useProfile, type ProfileData } from "@/lib/profile";
 import { users as mockUsers } from "@/lib/mock-data";
 
-export const Route = createFileRoute("/editar-perfil")({
+export const Route = createFileRoute("/_authenticated/editar-perfil")({
   head: () => ({ meta: [{ title: "Editar perfil — Pinguim" }] }),
   component: EditarPerfil,
 });
