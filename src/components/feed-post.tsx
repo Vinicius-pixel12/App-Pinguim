@@ -8,6 +8,7 @@ import { CommentsSheet } from "@/components/comments-sheet";
 import { SharePostDialog } from "@/components/share-post-dialog";
 import { GeminiIcon } from "@/components/gemini-icon";
 import { PeaceHandIcon } from "@/components/peace-hand-icon";
+import { LinkIcon } from "@/components/link-icon";
 import { openGeminiWithImage } from "@/lib/gemini";
 import { isPostSaved, togglePostSaved } from "@/lib/saved-posts";
 import { toast } from "sonner";
@@ -110,8 +111,8 @@ export function FeedPost({
             <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
               <BookOpen className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
-            <IconBtn aria-label="Enviar" onClick={() => setShareOpen(true)}>
-              <Send className="h-6 w-6 text-foreground" strokeWidth={1.75} />
+            <IconBtn aria-label="Compartilhar" onClick={() => setShareOpen(true)}>
+              <LinkIcon className="h-6 w-6 text-foreground" />
             </IconBtn>
             <IconBtn
               aria-label="Salvar"
