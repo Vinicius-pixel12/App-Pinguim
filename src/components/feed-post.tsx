@@ -56,7 +56,7 @@ export function FeedPost({
   return (
     <article className="mx-3 mb-4 overflow-hidden rounded-3xl bg-card shadow-sm">
       {/* Header */}
-      <header className="flex flex-col items-center gap-2 px-4 pt-4 pb-3 text-center">
+      <header className="flex flex-row items-center justify-center gap-3 px-4 pt-4 pb-3 text-left">
         <Link to="/perfil/$username" params={{ username: post.user.username }}>
           <img
             src={post.user.avatar}
