@@ -103,7 +103,11 @@ export function FeedPost({
               <span
                 className={`text-2xl leading-none transition-transform ${
                   liked ? "scale-110" : "opacity-90"
-                }`}
+                } text-primary-foreground`}
+                style={{
+                  WebkitTextStroke: "1px var(--color-foreground)",
+                  fontVariantEmoji: "text",
+                }}
                 role="img"
                 aria-label="Mão com dois dedos levantados"
               >
