@@ -111,7 +111,7 @@ export function FeedPost({
               </span>
             </IconBtn>
             <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
-              <MessageCircle className="h-6 w-6 text-foreground" strokeWidth={1.75} />
+              <BookOpen className="h-6 w-6 text-foreground" strokeWidth={1.75} />
             </IconBtn>
             <IconBtn aria-label="Enviar" onClick={() => setShareOpen(true)}>
               <Send className="h-6 w-6 text-foreground" strokeWidth={1.75} />
