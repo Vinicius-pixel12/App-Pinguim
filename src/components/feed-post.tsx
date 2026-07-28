@@ -104,8 +104,8 @@ export function FeedPost({
             <IconBtn aria-label="Curtir" onClick={() => setLiked((v) => !v)}>
               <PeaceHandIcon
                 className={`h-6 w-6 transition-transform ${
-                  liked ? "scale-110" : "opacity-90"
-                } text-foreground`}
+                  liked ? "scale-110 text-orange-500" : "opacity-90 text-foreground"
+                }`}
               />
             </IconBtn>
             <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
