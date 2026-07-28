@@ -13,8 +13,9 @@ import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { useProfile, type ProfileData } from "@/lib/profile";
 import { users as mockUsers } from "@/lib/mock-data";
+import { uploadImageWithFallback } from "@/lib/upload-image";
 
-export const Route = createFileRoute("/editar-perfil")({
+export const Route = createFileRoute("/_authenticated/editar-perfil")({
   head: () => ({ meta: [{ title: "Editar perfil — Pinguim" }] }),
   component: EditarPerfil,
 });
@@ -24,6 +25,7 @@ function EditarPerfil() {
   const [form, setForm] = useState<ProfileData>(saved);
   const [newBlock, setNewBlock] = useState("");
   const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
   const galleryRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const selfieRef = useRef<HTMLInputElement>(null);
@@ -33,10 +35,19 @@ function EditarPerfil() {
   const set = <K extends keyof ProfileData>(k: K, v: ProfileData[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const onAvatar = (f: File) => {
-    const reader = new FileReader();
-    reader.onload = () => set("avatar", String(reader.result));
-    reader.readAsDataURL(f);
+  const onAvatar = async (f: File) => {
+    setAvatarUploading(true);
+    try {
+      const { url, remote } = await uploadImageWithFallback(f, "avatar");
+      set("avatar", url);
+      if (!remote) {
+        toast.warning("Imagem salva localmente: armazenamento em nuvem não configurado.");
+      }
+    } catch {
+      toast.error("Não foi possível carregar a imagem");
+    } finally {
+      setAvatarUploading(false);
+    }
   };
 
   const onSelfie = () => {
@@ -131,7 +142,7 @@ function EditarPerfil() {
           />
           </div>
           <button onClick={() => setAvatarPickerOpen(true)} className="text-sm font-medium text-primary">
-            Alterar foto de perfil
+            {avatarUploading ? "Enviando…" : "Alterar foto de perfil"}
           </button>
         </div>
 

@@ -10,7 +10,7 @@ import { ProfileMediaGrid } from "@/components/profile-media-grid";
 import { useProfile } from "@/lib/profile";
 import { useSavedPosts, togglePostSaved } from "@/lib/saved-posts";
 
-export const Route = createFileRoute("/perfil")({
+export const Route = createFileRoute("/_authenticated/perfil")({
   head: () => ({ meta: [{ title: "Perfil — Pinguim" }] }),
   component: Perfil,
 });

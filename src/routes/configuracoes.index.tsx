@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import {
@@ -47,6 +48,7 @@ function Configuracoes() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handlePickFile = (file: File | undefined) => {
     if (!file) return;
@@ -72,6 +74,8 @@ function Configuracoes() {
 
   const handleLogout = async () => {
     setLogoutOpen(false);
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   };

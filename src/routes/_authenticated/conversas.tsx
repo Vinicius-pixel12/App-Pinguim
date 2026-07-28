@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { chats } from "@/lib/mock-data";
 
-export const Route = createFileRoute("/conversas")({
+export const Route = createFileRoute("/_authenticated/conversas")({
   head: () => ({ meta: [{ title: "Conversas — Pinguim" }] }),
   component: Conversas,
 });

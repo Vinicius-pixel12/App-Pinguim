@@ -28,7 +28,7 @@ import { useSession, useWallet, useTransactions, useKyc } from "@/hooks/use-acco
 import { createDeposit, checkDeposit, getPagarmePublicKey } from "@/lib/payments.functions";
 import { tokenizeCard, onlyDigits } from "@/lib/pagarme-token";
 
-export const Route = createFileRoute("/carteira")({
+export const Route = createFileRoute("/_authenticated/carteira")({
   head: () => ({
     meta: [
       { title: "Carteira Pinguim — saldo, ganhos e saque PIX" },

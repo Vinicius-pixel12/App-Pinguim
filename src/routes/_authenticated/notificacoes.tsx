@@ -5,7 +5,7 @@ import { conversationRequests as initial } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/notificacoes")({
+export const Route = createFileRoute("/_authenticated/notificacoes")({
   head: () => ({ meta: [{ title: "Notificações — Pinguim" }] }),
   component: Notificacoes,
 });
