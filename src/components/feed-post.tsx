@@ -155,7 +155,7 @@ export function FeedPost({
           onClick={() => setLikesOpen(true)}
           className="text-sm font-semibold text-foreground hover:underline"
         >
-          {likeCount.toLocaleString("pt-BR")} curtidas
+          {likeCount.toLocaleString("pt-BR")} reações
         </button>
 
         <p className="text-sm text-foreground">
@@ -167,7 +167,7 @@ export function FeedPost({
             onClick={() => setCommentsOpen(true)}
             className="text-sm text-muted-foreground"
           >
-            Ver todos os {post.comments} comentários
+            Ver todos os {post.comments} anotações
           </button>
         )}
         <div className="pt-0.5 text-[11px] uppercase tracking-wide text-muted-foreground">
