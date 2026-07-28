@@ -185,7 +185,7 @@ export function FeedPost({
         <DialogContent className="max-w-sm rounded-2xl p-0">
           <DialogHeader className="border-b border-border p-4">
             <DialogTitle className="text-center text-base font-semibold">
-              Curtidas
+              Reações
             </DialogTitle>
           </DialogHeader>
           <div className="max-h-[60vh] overflow-y-auto p-2">
