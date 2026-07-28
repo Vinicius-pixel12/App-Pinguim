@@ -1,0 +1,10 @@
+revoke all on function public.sync_post_likes_count() from public, anon, authenticated;
+revoke all on function public.sync_comments_count() from public, anon, authenticated;
+revoke all on function public.sync_comment_likes_count() from public, anon, authenticated;
+revoke all on function public.handle_new_follow() from public, anon, authenticated;
+revoke all on function public.notify_new_follow() from public, anon, authenticated;
+revoke all on function public.handle_new_user() from public, anon, authenticated;
+revoke all on function public.update_updated_at_column() from public, anon, authenticated;
+revoke all on function public.purge_expired_stories() from public, anon, authenticated;
+revoke all on function public.follower_counts(uuid) from public, anon;
+grant execute on function public.follower_counts(uuid) to authenticated, anon;
