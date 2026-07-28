@@ -111,7 +111,7 @@ export function FeedPost({
                 role="img"
                 aria-label="Mão com dois dedos levantados"
               >
-                ✌️
+                ✌︎
               </span>
             </IconBtn>
             <IconBtn aria-label="Comentar" onClick={() => setCommentsOpen(true)}>
