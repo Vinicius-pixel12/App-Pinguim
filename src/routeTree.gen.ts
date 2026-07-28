@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ExplorarRouteImport } from './routes/explorar'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as AuthRouteImport } from './routes/auth'
@@ -32,6 +33,11 @@ import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configura
 import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
 import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExplorarRoute = ExplorarRouteImport.update({
   id: '/explorar',
   path: '/explorar',
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/explorar': typeof ExplorarRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/conversas': typeof AuthenticatedConversasRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/explorar': typeof ExplorarRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/carteira': typeof AuthenticatedCarteiraRoute
   '/conversas': typeof AuthenticatedConversasRoute
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/configuracoes': typeof ConfiguracoesRouteWithChildren
   '/explorar': typeof ExplorarRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/carteira': typeof AuthenticatedCarteiraRoute
   '/_authenticated/conversas': typeof AuthenticatedConversasRoute
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/configuracoes'
     | '/explorar'
+    | '/reset-password'
     | '/admin'
     | '/carteira'
     | '/conversas'
@@ -245,6 +255,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/explorar'
+    | '/reset-password'
     | '/admin'
     | '/carteira'
     | '/conversas'
@@ -267,6 +278,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/configuracoes'
     | '/explorar'
+    | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/carteira'
     | '/_authenticated/conversas'
@@ -292,12 +304,20 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ConfiguracoesRoute: typeof ConfiguracoesRouteWithChildren
   ExplorarRoute: typeof ExplorarRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   PerfilUsernameRoute: typeof PerfilUsernameRoute
   ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/explorar': {
       id: '/explorar'
       path: '/explorar'
@@ -528,6 +548,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ConfiguracoesRoute: ConfiguracoesRouteWithChildren,
   ExplorarRoute: ExplorarRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   PerfilUsernameRoute: PerfilUsernameRoute,
   ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
 }
