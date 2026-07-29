@@ -55,6 +55,8 @@ export function StoryComposer({
   onPublished?: () => void;
 }) {
   const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [publishing, setPublishing] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [idx, setIdx] = useState(0);
   const galleryRef = useRef<HTMLInputElement | null>(null);
   const cameraRef = useRef<HTMLInputElement | null>(null);
