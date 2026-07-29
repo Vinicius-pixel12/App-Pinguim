@@ -10,23 +10,36 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
-const MAX_BYTES = 10 * 1024 * 1024;
+const ALLOWED_IMAGE = ["image/jpeg", "image/png", "image/webp", "image/gif"] as const;
+const ALLOWED_VIDEO = ["video/mp4", "video/quicktime", "video/webm"] as const;
+const ALLOWED = [...ALLOWED_IMAGE, ...ALLOWED_VIDEO] as const;
 
-const inputSchema = z.object({
-  kind: z.enum(["avatar", "post", "story", "background"]),
-  contentType: z.enum(ALLOWED),
-  contentLength: z.number().int().positive().max(MAX_BYTES),
-});
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+
+const inputSchema = z
+  .object({
+    kind: z.enum(["avatar", "post", "story", "background"]),
+    contentType: z.enum(ALLOWED),
+    contentLength: z.number().int().positive().max(MAX_VIDEO_BYTES),
+  })
+  .refine(
+    (v) => !v.contentType.startsWith("image/") || v.contentLength <= MAX_IMAGE_BYTES,
+    { message: "Imagem acima de 10 MB", path: ["contentLength"] },
+  );
+
+const EXTENSIONS: Record<string, string> = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "video/mp4": "mp4",
+  "video/quicktime": "mov",
+  "video/webm": "webm",
+};
 
 function extFor(contentType: string) {
-  return contentType === "image/jpeg"
-    ? "jpg"
-    : contentType === "image/png"
-      ? "png"
-      : contentType === "image/webp"
-        ? "webp"
-        : "gif";
+  return EXTENSIONS[contentType] ?? "bin";
 }
 
 /** Diagnóstico público: o R2 está configurado neste ambiente? */
