@@ -152,7 +152,12 @@ export function PostComposer({
               className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60"
             >
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-              {busy ? "Enviando…" : "Publicar"}
+              {busy
+                ? isVideo && progress > 0 && progress < 100
+                  ? `Otimizando ${progress}%`
+                  : "Enviando…"
+                : "Publicar"}
+
             </button>
           </div>
         )}
