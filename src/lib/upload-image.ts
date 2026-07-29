@@ -1,4 +1,5 @@
 import { createImageUploadUrl } from "@/lib/uploads.functions";
+import { compressMedia } from "@/lib/media-compress";
 
 export type UploadKind = "avatar" | "post" | "story" | "background";
 
