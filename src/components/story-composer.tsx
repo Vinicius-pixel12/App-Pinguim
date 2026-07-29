@@ -111,6 +111,7 @@ export function StoryComposer({
         id: `d${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         kind: isVideo ? "video" : "image",
         url,
+        file: f,
         poster: poster || undefined,
         duration: isVideo ? duration : undefined,
         startTime: 0,
