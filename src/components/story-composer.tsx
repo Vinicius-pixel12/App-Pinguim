@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X, Camera, ImagePlus, ChevronLeft, ChevronRight, Trash2, Scissors } from "lucide-react";
+import { toast } from "sonner";
 import { users } from "@/lib/mock-data";
 import type { StoryMedia } from "@/lib/mock-data";
 import { addOwnStories } from "@/lib/own-stories";
+import { uploadMedia } from "@/lib/upload-image";
+import { supabase } from "@/integrations/supabase/client";
 
 const MAX_ITEMS = 10;
 const MAX_VIDEO = 10; // seconds
@@ -11,12 +14,14 @@ type Draft = {
   id: string;
   kind: "image" | "video";
   url: string; // object URL
+  file?: File; // arquivo original (para compressão + upload)
   poster?: string; // for video
   duration?: number; // full duration for videos
   startTime: number;
   caption: string;
   mentions: string[];
 };
+
 
 async function captureVideoPoster(url: string, at = 0): Promise<string> {
   return new Promise((resolve) => {
