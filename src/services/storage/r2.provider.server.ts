@@ -93,7 +93,8 @@ export function createR2StorageService(): StorageService {
       if (bucket === "kyc") {
         throw new NotImplementedError("r2", "publicUrl(kyc) — conteúdo privado");
       }
-      const base = requireEnv("r2", "R2_PUBLIC_BASE_URL").replace(/\/$/, "");
+      const raw = requireEnv("r2", "R2_PUBLIC_BASE_URL").trim().replace(/\/$/, "");
+      const base = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
       return `${base}/${key.replace(/^\/+/, "")}`;
     },
     async head(bucket: StorageBucket, key: StorageKey): Promise<StoredObject | null> {
