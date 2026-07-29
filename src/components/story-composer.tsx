@@ -235,11 +235,12 @@ export function StoryComposer({
           </span>
           <button
             onClick={publish}
-            disabled={drafts.length === 0}
+            disabled={drafts.length === 0 || publishing}
             className="rounded-full bg-gradient-to-r from-[oklch(0.65_0.18_145)] via-[oklch(0.75_0.22_105)] to-[oklch(0.82_0.18_95)] px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-40"
           >
-            Publicar
+            {publishing ? (progress > 0 ? `Comprimindo ${progress}%` : "Enviando…") : "Publicar"}
           </button>
+
         </div>
 
         {drafts.length === 0 ? (
