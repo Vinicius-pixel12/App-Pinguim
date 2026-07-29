@@ -16,6 +16,8 @@ export type MockPost = {
   id: string;
   user: MockUser;
   image: string;
+  /** URL do vídeo quando kind === "video" (mídia no Cloudflare R2/CDN). */
+  video?: string;
   caption: string;
   likes: number;
   comments: number;

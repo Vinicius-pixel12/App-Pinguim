@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, Image as ImageIcon, X } from "lucide-react";
+import { Camera, Image as ImageIcon, Loader2, X } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { uploadMedia, validateMediaFile, ALLOWED_VIDEO_TYPES } from "@/lib/upload-image";
 
 export function PostComposer({
   open,
@@ -13,28 +16,62 @@ export function PostComposer({
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [isVideo, setIsVideo] = useState(false);
   const [caption, setCaption] = useState("");
+  const [busy, setBusy] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!open) {
       setPreview(null);
+      setFile(null);
+      setIsVideo(false);
       setCaption("");
+      setBusy(false);
     }
   }, [open]);
 
-  const handleFile = (file: File | undefined) => {
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    setPreview(url);
+  const handleFile = (f: File | undefined) => {
+    if (!f) return;
+    const invalid = validateMediaFile(f);
+    if (invalid) {
+      toast.error(invalid);
+      return;
+    }
+    setFile(f);
+    setIsVideo(ALLOWED_VIDEO_TYPES.includes(f.type));
+    setPreview(URL.createObjectURL(f));
   };
 
-  const publish = () => {
-    toast.success("Publicação enviada!");
-    onOpenChange(false);
+  const publish = async () => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) throw new Error("Faça login para publicar.");
+
+      const mediaUrl = await uploadMedia(file, "post");
+      const { error } = await supabase.from("posts").insert({
+        user_id: auth.user.id,
+        media_url: mediaUrl,
+        media_type: isVideo ? "video" : "photo",
+        caption: caption.trim() || null,
+      });
+      if (error) throw error;
+
+      await queryClient.invalidateQueries({ queryKey: ["feed-posts"] });
+      toast.success("Publicação enviada!");
+      onOpenChange(false);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível publicar");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(v) => (busy ? null : onOpenChange(v))}>
       <DialogContent className="max-w-sm gap-0 p-0">
         <DialogHeader className="border-b border-border p-4">
           <DialogTitle className="text-base">Nova publicação</DialogTitle>
@@ -50,7 +87,7 @@ export function PostComposer({
                 <Camera className="h-5 w-5" />
               </div>
               <div>
-                <div className="text-sm font-semibold">Tirar foto</div>
+                <div className="text-sm font-semibold">Tirar foto ou gravar vídeo</div>
                 <div className="text-xs text-muted-foreground">Usar a câmera do dispositivo</div>
               </div>
             </button>
@@ -63,16 +100,30 @@ export function PostComposer({
               </div>
               <div>
                 <div className="text-sm font-semibold">Escolher da galeria</div>
-                <div className="text-xs text-muted-foreground">Selecionar foto ou vídeo</div>
+                <div className="text-xs text-muted-foreground">
+                  Foto (até 10 MB) ou vídeo (até 200 MB)
+                </div>
               </div>
             </button>
           </div>
         ) : (
           <div className="p-4">
             <div className="relative overflow-hidden rounded-2xl bg-muted">
-              <img src={preview} alt="Prévia" className="aspect-square w-full object-cover" />
+              {isVideo ? (
+                <video
+                  src={preview}
+                  className="aspect-square w-full object-cover"
+                  controls
+                  playsInline
+                />
+              ) : (
+                <img src={preview} alt="Prévia" className="aspect-square w-full object-cover" />
+              )}
               <button
-                onClick={() => setPreview(null)}
+                onClick={() => {
+                  setPreview(null);
+                  setFile(null);
+                }}
                 aria-label="Trocar"
                 className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white"
               >
@@ -88,9 +139,11 @@ export function PostComposer({
             />
             <button
               onClick={publish}
-              className="mt-3 w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground"
+              disabled={busy}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60"
             >
-              Publicar
+              {busy && <Loader2 className="h-4 w-4 animate-spin" />}
+              {busy ? "Enviando…" : "Publicar"}
             </button>
           </div>
         )}
