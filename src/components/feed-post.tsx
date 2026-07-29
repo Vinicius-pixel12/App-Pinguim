@@ -80,15 +80,27 @@ export function FeedPost({
 
       {/* Image + right-side actions */}
       <div className="relative mx-3 aspect-square overflow-hidden rounded-2xl bg-muted">
-        <img
-          src={post.image}
-          alt=""
-          className="h-full w-full object-cover"
-          loading="lazy"
-          onDoubleClick={() => setLiked(true)}
-          onClick={isOwn ? () => openGeminiWithImage(post.image) : undefined}
-          style={isOwn ? { cursor: "pointer" } : undefined}
-        />
+        {post.kind === "video" && post.video ? (
+          <video
+            src={post.video}
+            poster={post.image || undefined}
+            className="h-full w-full object-cover"
+            controls
+            playsInline
+            preload="metadata"
+            onDoubleClick={() => setLiked(true)}
+          />
+        ) : (
+          <img
+            src={post.image}
+            alt=""
+            className="h-full w-full object-cover"
+            loading="lazy"
+            onDoubleClick={() => setLiked(true)}
+            onClick={isOwn ? () => openGeminiWithImage(post.image) : undefined}
+            style={isOwn ? { cursor: "pointer" } : undefined}
+          />
+        )}
 
         {/* Vertical action rail */}
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
