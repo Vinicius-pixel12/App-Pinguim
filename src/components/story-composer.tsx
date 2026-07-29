@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { X, Camera, ImagePlus, ChevronLeft, ChevronRight, Trash2, Scissors } from "lucide-react";
+import { toast } from "sonner";
 import { users } from "@/lib/mock-data";
 import type { StoryMedia } from "@/lib/mock-data";
 import { addOwnStories } from "@/lib/own-stories";
+import { uploadMedia } from "@/lib/upload-image";
+import { supabase } from "@/integrations/supabase/client";
 
 const MAX_ITEMS = 10;
 const MAX_VIDEO = 10; // seconds
@@ -11,12 +14,14 @@ type Draft = {
   id: string;
   kind: "image" | "video";
   url: string; // object URL
+  file?: File; // arquivo original (para compressão + upload)
   poster?: string; // for video
   duration?: number; // full duration for videos
   startTime: number;
   caption: string;
   mentions: string[];
 };
+
 
 async function captureVideoPoster(url: string, at = 0): Promise<string> {
   return new Promise((resolve) => {
@@ -50,6 +55,8 @@ export function StoryComposer({
   onPublished?: () => void;
 }) {
   const [drafts, setDrafts] = useState<Draft[]>([]);
+  const [publishing, setPublishing] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [idx, setIdx] = useState(0);
   const galleryRef = useRef<HTMLInputElement | null>(null);
   const cameraRef = useRef<HTMLInputElement | null>(null);
@@ -104,6 +111,7 @@ export function StoryComposer({
         id: `d${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
         kind: isVideo ? "video" : "image",
         url,
+        file: f,
         poster: poster || undefined,
         duration: isVideo ? duration : undefined,
         startTime: 0,
@@ -156,29 +164,64 @@ export function StoryComposer({
   };
 
   const publish = async () => {
-    if (drafts.length === 0) return;
+    if (drafts.length === 0 || publishing) return;
+    setPublishing(true);
     const now = Date.now();
     const items: StoryMedia[] = [];
-    for (const d of drafts) {
-      items.push({
-        id: `own-${now}-${d.id}`,
-        image: d.kind === "video" ? d.poster || "" : d.url,
-        mediaUrl: d.kind === "video" ? d.url : undefined,
-        kind: d.kind,
-        startTime: d.startTime,
-        duration:
-          d.kind === "video"
-            ? Math.min(MAX_VIDEO, Math.max(1, (d.duration ?? MAX_VIDEO) - d.startTime))
-            : undefined,
-        createdAt: now,
-        caption: d.caption || undefined,
-        mentions: d.mentions.length ? d.mentions : undefined,
-      });
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+
+      for (const d of drafts) {
+        let url = d.url;
+        if (d.file) {
+          // Compressão automática antes do envio (vídeo cortado em 10s).
+          url = await uploadMedia(d.file, "story", {
+            maxSeconds: d.kind === "video" ? MAX_VIDEO : undefined,
+            onCompressProgress: (r) => setProgress(Math.round(r * 100)),
+          });
+        }
+        setProgress(0);
+
+        if (auth.user) {
+          // Expira e é apagado automaticamente 24h depois da publicação.
+          await supabase.from("stories").insert({
+            user_id: auth.user.id,
+            media_url: url,
+            media_type: d.kind === "video" ? "video" : "photo",
+            caption: d.caption || null,
+            mentions: d.mentions,
+            expires_at: new Date(now + 24 * 60 * 60 * 1000).toISOString(),
+          });
+        }
+
+        items.push({
+          id: `own-${now}-${d.id}`,
+          image: d.kind === "video" ? d.poster || "" : url,
+          mediaUrl: d.kind === "video" ? url : undefined,
+          kind: d.kind,
+          startTime: d.startTime,
+          duration:
+            d.kind === "video"
+              ? Math.min(MAX_VIDEO, Math.max(1, (d.duration ?? MAX_VIDEO) - d.startTime))
+              : undefined,
+          createdAt: now,
+          caption: d.caption || undefined,
+          mentions: d.mentions.length ? d.mentions : undefined,
+        });
+      }
+
+      addOwnStories(items);
+      toast.success("Momento publicado! Ele some em 24 horas.");
+      onPublished?.();
+      onClose();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Não foi possível publicar o momento");
+    } finally {
+      setProgress(0);
+      setPublishing(false);
     }
-    addOwnStories(items);
-    onPublished?.();
-    onClose();
   };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
@@ -192,11 +235,12 @@ export function StoryComposer({
           </span>
           <button
             onClick={publish}
-            disabled={drafts.length === 0}
+            disabled={drafts.length === 0 || publishing}
             className="rounded-full bg-gradient-to-r from-[oklch(0.65_0.18_145)] via-[oklch(0.75_0.22_105)] to-[oklch(0.82_0.18_95)] px-4 py-1.5 text-sm font-semibold text-white disabled:opacity-40"
           >
-            Publicar
+            {publishing ? (progress > 0 ? `Comprimindo ${progress}%` : "Enviando…") : "Publicar"}
           </button>
+
         </div>
 
         {drafts.length === 0 ? (

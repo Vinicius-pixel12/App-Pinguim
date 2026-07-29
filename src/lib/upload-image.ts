@@ -1,4 +1,5 @@
 import { createImageUploadUrl } from "@/lib/uploads.functions";
+import { compressMedia } from "@/lib/media-compress";
 
 export type UploadKind = "avatar" | "post" | "story" | "background";
 
@@ -27,30 +28,57 @@ export function validateMediaFile(file: File): string | null {
   return null;
 }
 
+export type UploadOptions = {
+  /** Corta o vídeo neste limite (stories: 10s). */
+  maxSeconds?: number;
+  /** Progresso da compressão do vídeo (0..1). */
+  onCompressProgress?: (ratio: number) => void;
+  /** Desliga a compressão automática. */
+  skipCompression?: boolean;
+};
+
 /**
- * Envia a mídia (imagem ou vídeo) direto para o Cloudflare R2 via URL
- * pré-assinada e devolve a URL pública (CDN).
+ * Comprime a mídia automaticamente (canvas para imagens, FFmpeg/WASM para
+ * vídeos) e envia direto para o Cloudflare R2 via URL pré-assinada,
+ * devolvendo a URL pública (CDN).
  */
-export async function uploadMedia(file: File, kind: UploadKind): Promise<string> {
+export async function uploadMedia(
+  file: File,
+  kind: UploadKind,
+  options: UploadOptions = {},
+): Promise<string> {
   const invalid = validateMediaFile(file);
   if (invalid) throw new Error(invalid);
+
+  const final = options.skipCompression
+    ? file
+    : (
+        await compressMedia(file, {
+          maxSeconds: options.maxSeconds,
+          onProgress: options.onCompressProgress,
+        })
+      ).file;
+
+  const stillInvalid = validateMediaFile(final);
+  if (stillInvalid) throw new Error(stillInvalid);
 
   const upload = await createImageUploadUrl({
     data: {
       kind,
-      contentType: file.type as "image/jpeg",
-      contentLength: file.size,
+      contentType: final.type as "image/jpeg",
+      contentLength: final.size,
     },
   });
 
   const res = await fetch(upload.url, {
     method: upload.method,
     headers: upload.headers,
-    body: file,
+    body: final,
   });
   if (!res.ok) throw new Error(`Falha no upload para o R2 (${res.status})`);
   return upload.publicUrl;
 }
+
 
 /** Alias histórico — imagens. */
 export const uploadImage = uploadMedia;
