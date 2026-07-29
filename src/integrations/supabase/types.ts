@@ -485,34 +485,46 @@ export type Database = {
           caption: string | null
           comments_count: number
           created_at: string
+          duration_seconds: number | null
+          height: number | null
           id: string
           likes_count: number
           media_type: Database["public"]["Enums"]["media_type"]
           media_url: string
+          thumbnail_url: string | null
           updated_at: string
           user_id: string
+          width: number | null
         }
         Insert: {
           caption?: string | null
           comments_count?: number
           created_at?: string
+          duration_seconds?: number | null
+          height?: number | null
           id?: string
           likes_count?: number
           media_type?: Database["public"]["Enums"]["media_type"]
           media_url: string
+          thumbnail_url?: string | null
           updated_at?: string
           user_id: string
+          width?: number | null
         }
         Update: {
           caption?: string | null
           comments_count?: number
           created_at?: string
+          duration_seconds?: number | null
+          height?: number | null
           id?: string
           likes_count?: number
           media_type?: Database["public"]["Enums"]["media_type"]
           media_url?: string
+          thumbnail_url?: string | null
           updated_at?: string
           user_id?: string
+          width?: number | null
         }
         Relationships: [
           {

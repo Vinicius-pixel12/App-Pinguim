@@ -112,11 +112,48 @@ export type VideoCompressOptions = {
   onProgress?: (ratio: number) => void;
 };
 
+export type VideoCompressResult = CompressResult & {
+  /** Miniatura (JPEG) extraída automaticamente do vídeo comprimido. */
+  thumbnail?: File;
+  durationSeconds?: number;
+  width?: number;
+  height?: number;
+};
+
+/** Lê duração/dimensões do vídeo usando o elemento <video> (barato e confiável). */
+export function readVideoMetadata(
+  file: File,
+): Promise<{ durationSeconds?: number; width?: number; height?: number }> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const el = document.createElement("video");
+    el.preload = "metadata";
+    el.muted = true;
+    const done = (v: { durationSeconds?: number; width?: number; height?: number }) => {
+      URL.revokeObjectURL(url);
+      resolve(v);
+    };
+    el.onloadedmetadata = () =>
+      done({
+        durationSeconds: Number.isFinite(el.duration) ? el.duration : undefined,
+        width: el.videoWidth || undefined,
+        height: el.videoHeight || undefined,
+      });
+    el.onerror = () => done({});
+    el.src = url;
+  });
+}
+
 export async function compressVideo(
   file: File,
   options: VideoCompressOptions = {},
-): Promise<CompressResult> {
-  const original = { compressed: false, originalBytes: file.size, bytes: file.size, file };
+): Promise<VideoCompressResult> {
+  const original: VideoCompressResult = {
+    compressed: false,
+    originalBytes: file.size,
+    bytes: file.size,
+    file,
+  };
   try {
     const ffmpeg = await getFfmpeg();
     const { fetchFile } = await import("@ffmpeg/util");
@@ -125,8 +162,10 @@ export async function compressVideo(
       options.onProgress?.(Math.max(0, Math.min(1, progress)));
     if (options.onProgress) ffmpeg.on("progress", handler);
 
-    const input = `in-${Date.now()}`;
-    const output = `out-${Date.now()}.mp4`;
+    const stamp = Date.now();
+    const input = `in-${stamp}`;
+    const output = `out-${stamp}.mp4`;
+    const thumbName = `thumb-${stamp}.jpg`;
     await ffmpeg.writeFile(input, await fetchFile(file));
 
     const args = ["-i", input];
@@ -153,29 +192,72 @@ export async function compressVideo(
     await ffmpeg.exec(args);
 
     const data = await ffmpeg.readFile(output);
+
+    // Miniatura: primeiro frame representativo do vídeo já comprimido.
+    let thumbnail: File | undefined;
+    try {
+      await ffmpeg.exec([
+        "-i",
+        output,
+        "-ss",
+        "00:00:01",
+        "-frames:v",
+        "1",
+        "-vf",
+        `scale='min(720,iw)':-2`,
+        "-q:v",
+        "4",
+        thumbName,
+      ]);
+      const thumbData = (await ffmpeg.readFile(thumbName)) as Uint8Array;
+      if (thumbData && thumbData.length > 0) {
+        thumbnail = new File(
+          [new Uint8Array(thumbData)],
+          file.name.replace(/\.[^.]+$/, "") + "-thumb.jpg",
+          { type: "image/jpeg" },
+        );
+      }
+    } catch {
+      thumbnail = undefined;
+    }
+
+    // Limpa os arquivos temporários do sistema de arquivos virtual do FFmpeg,
+    // inclusive o original recebido — só a versão comprimida segue adiante.
     await ffmpeg.deleteFile(input).catch(() => {});
     await ffmpeg.deleteFile(output).catch(() => {});
+    await ffmpeg.deleteFile(thumbName).catch(() => {});
     if (options.onProgress) ffmpeg.off("progress", handler);
 
     const bytes = data as Uint8Array;
-    if (!bytes || bytes.length === 0) return original;
-    // Mantém o original quando a transcodificação não trouxe ganho e não houve corte.
-    if (bytes.length >= file.size && !options.maxSeconds) return original;
+    if (!bytes || bytes.length === 0) return { ...original, thumbnail };
 
     const name = file.name.replace(/\.[^.]+$/, "") + ".mp4";
     const out = new File([new Uint8Array(bytes)], name, { type: "video/mp4" });
-    return { file: out, compressed: true, originalBytes: file.size, bytes: out.size };
+    const keepOriginal = out.size >= file.size && !options.maxSeconds;
+    const finalFile = keepOriginal ? file : out;
+    const meta = await readVideoMetadata(finalFile);
+
+    return {
+      file: finalFile,
+      compressed: !keepOriginal,
+      originalBytes: file.size,
+      bytes: finalFile.size,
+      thumbnail,
+      ...meta,
+    };
   } catch {
     return original;
   }
 }
+
 
 /* ------------------------------- dispatcher ------------------------------ */
 
 export async function compressMedia(
   file: File,
   options: VideoCompressOptions = {},
-): Promise<CompressResult> {
+): Promise<VideoCompressResult> {
+
   if (file.type.startsWith("video/")) return compressVideo(file, options);
   if (file.type.startsWith("image/")) return compressImage(file);
   return { file, compressed: false, originalBytes: file.size, bytes: file.size };

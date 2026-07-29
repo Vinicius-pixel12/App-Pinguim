@@ -7,6 +7,7 @@ type Row = {
   user_id: string;
   media_url: string;
   media_type: "photo" | "video";
+  thumbnail_url: string | null;
   caption: string | null;
   likes_count: number;
   comments_count: number;
@@ -54,7 +55,7 @@ export function useFeedPosts() {
       const { data, error } = await supabase
         .from("posts")
         .select(
-          "id,user_id,media_url,media_type,caption,likes_count,comments_count,created_at,profiles(id,username,display_name,avatar_url,city,state,bio,is_private)",
+          "id,user_id,media_url,media_type,thumbnail_url,caption,likes_count,comments_count,created_at,profiles(id,username,display_name,avatar_url,city,state,bio,is_private)",
         )
         .order("created_at", { ascending: false })
         .limit(50);
@@ -65,7 +66,7 @@ export function useFeedPosts() {
         .map((r) => ({
           id: r.id,
           user: toMockUser(r.profiles!),
-          image: r.media_type === "video" ? "" : r.media_url,
+          image: r.media_type === "video" ? (r.thumbnail_url ?? "") : r.media_url,
           video: r.media_type === "video" ? r.media_url : undefined,
           kind: r.media_type,
           caption: r.caption ?? "",

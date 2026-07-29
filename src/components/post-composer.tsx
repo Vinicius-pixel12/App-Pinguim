@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadMedia, validateMediaFile, ALLOWED_VIDEO_TYPES } from "@/lib/upload-image";
+import { uploadMediaWithThumbnail, validateMediaFile, ALLOWED_VIDEO_TYPES } from "@/lib/upload-image";
 
 export function PostComposer({
   open,
@@ -20,6 +20,7 @@ export function PostComposer({
   const [isVideo, setIsVideo] = useState(false);
   const [caption, setCaption] = useState("");
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState(0);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -29,6 +30,7 @@ export function PostComposer({
       setIsVideo(false);
       setCaption("");
       setBusy(false);
+      setProgress(0);
     }
   }, [open]);
 
@@ -47,15 +49,22 @@ export function PostComposer({
   const publish = async () => {
     if (!file) return;
     setBusy(true);
+    setProgress(0);
     try {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) throw new Error("Faça login para publicar.");
 
-      const mediaUrl = await uploadMedia(file, "post");
+      const media = await uploadMediaWithThumbnail(file, "post", {
+        onCompressProgress: (r) => setProgress(Math.round(r * 100)),
+      });
       const { error } = await supabase.from("posts").insert({
         user_id: auth.user.id,
-        media_url: mediaUrl,
+        media_url: media.url,
         media_type: isVideo ? "video" : "photo",
+        thumbnail_url: media.thumbnailUrl,
+        duration_seconds: media.durationSeconds,
+        width: media.width,
+        height: media.height,
         caption: caption.trim() || null,
       });
       if (error) throw error;
@@ -143,7 +152,12 @@ export function PostComposer({
               className="mt-3 flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60"
             >
               {busy && <Loader2 className="h-4 w-4 animate-spin" />}
-              {busy ? "Enviando…" : "Publicar"}
+              {busy
+                ? isVideo && progress > 0 && progress < 100
+                  ? `Otimizando ${progress}%`
+                  : "Enviando…"
+                : "Publicar"}
+
             </button>
           </div>
         )}
