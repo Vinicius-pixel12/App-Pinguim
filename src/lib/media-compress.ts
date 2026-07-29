@@ -256,7 +256,8 @@ export async function compressVideo(
 export async function compressMedia(
   file: File,
   options: VideoCompressOptions = {},
-): Promise<CompressResult> {
+): Promise<VideoCompressResult> {
+
   if (file.type.startsWith("video/")) return compressVideo(file, options);
   if (file.type.startsWith("image/")) return compressImage(file);
   return { file, compressed: false, originalBytes: file.size, bytes: file.size };
