@@ -47,37 +47,88 @@ export async function uploadMedia(
   kind: UploadKind,
   options: UploadOptions = {},
 ): Promise<string> {
-  const invalid = validateMediaFile(file);
-  if (invalid) throw new Error(invalid);
+  return (await uploadMediaWithThumbnail(file, kind, options)).url;
+}
 
-  const final = options.skipCompression
-    ? file
-    : (
-        await compressMedia(file, {
-          maxSeconds: options.maxSeconds,
-          onProgress: options.onCompressProgress,
-        })
-      ).file;
+export type UploadedMedia = {
+  url: string;
+  thumbnailUrl: string | null;
+  durationSeconds: number | null;
+  width: number | null;
+  height: number | null;
+  originalBytes: number;
+  bytes: number;
+};
 
-  const stillInvalid = validateMediaFile(final);
-  if (stillInvalid) throw new Error(stillInvalid);
-
+/** Envia um arquivo já comprimido para o R2 e devolve a URL pública (CDN). */
+async function putToR2(file: File, kind: UploadKind): Promise<string> {
   const upload = await createImageUploadUrl({
     data: {
       kind,
-      contentType: final.type as "image/jpeg",
-      contentLength: final.size,
+      contentType: file.type as "image/jpeg",
+      contentLength: file.size,
     },
   });
 
   const res = await fetch(upload.url, {
     method: upload.method,
     headers: upload.headers,
-    body: final,
+    body: file,
   });
   if (!res.ok) throw new Error(`Falha no upload para o R2 (${res.status})`);
   return upload.publicUrl;
 }
+
+/**
+ * Pipeline completo de mídia:
+ * 1. valida o arquivo recebido;
+ * 2. mantém o original apenas em memória/FS temporário do FFmpeg;
+ * 3. comprime (canvas para imagens, FFmpeg/WASM para vídeos) e gera thumbnail;
+ * 4. envia ao R2 somente a versão comprimida + a miniatura;
+ * 5. descarta o original ao final (nunca é enviado nem persistido).
+ */
+export async function uploadMediaWithThumbnail(
+  file: File,
+  kind: UploadKind,
+  options: UploadOptions = {},
+): Promise<UploadedMedia> {
+  const invalid = validateMediaFile(file);
+  if (invalid) throw new Error(invalid);
+
+  const result = options.skipCompression
+    ? { file, originalBytes: file.size, bytes: file.size }
+    : await compressMedia(file, {
+        maxSeconds: options.maxSeconds,
+        onProgress: options.onCompressProgress,
+      });
+
+  const final = result.file;
+  const stillInvalid = validateMediaFile(final);
+  if (stillInvalid) throw new Error(stillInvalid);
+
+  const url = await putToR2(final, kind);
+
+  let thumbnailUrl: string | null = null;
+  const thumbnail = "thumbnail" in result ? result.thumbnail : undefined;
+  if (thumbnail) {
+    try {
+      thumbnailUrl = await putToR2(thumbnail, kind);
+    } catch {
+      thumbnailUrl = null; // miniatura é opcional; o post continua válido
+    }
+  }
+
+  return {
+    url,
+    thumbnailUrl,
+    durationSeconds: ("durationSeconds" in result ? result.durationSeconds : null) ?? null,
+    width: ("width" in result ? result.width : null) ?? null,
+    height: ("height" in result ? result.height : null) ?? null,
+    originalBytes: result.originalBytes,
+    bytes: final.size,
+  };
+}
+
 
 
 /** Alias histórico — imagens. */
