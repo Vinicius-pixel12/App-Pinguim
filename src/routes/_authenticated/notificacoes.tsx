@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MessageCircle, Phone, Check, X } from "lucide-react";
 import { conversationRequests as initial } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { PushOptIn } from "@/components/push-opt-in";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notificacoes")({
