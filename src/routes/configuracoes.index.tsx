@@ -74,6 +74,8 @@ function Configuracoes() {
 
   const handleLogout = async () => {
     setLogoutOpen(false);
+    const { disablePush } = await import("@/lib/push-client");
+    await disablePush();
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();

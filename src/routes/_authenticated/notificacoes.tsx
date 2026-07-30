@@ -3,6 +3,7 @@ import { useState } from "react";
 import { MessageCircle, Phone, Check, X } from "lucide-react";
 import { conversationRequests as initial } from "@/lib/mock-data";
 import { Button } from "@/components/ui/button";
+import { PushOptIn } from "@/components/push-opt-in";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/notificacoes")({
@@ -31,6 +32,10 @@ function Notificacoes() {
         <h1 className="text-lg font-semibold">Notificações</h1>
         <p className="text-xs text-muted-foreground">Pedidos de conversa recebidos</p>
       </header>
+
+      <PushOptIn />
+
+
 
       {requests.length === 0 ? (
         <div className="p-8 text-center text-sm text-muted-foreground">
