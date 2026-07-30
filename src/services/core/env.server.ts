@@ -36,6 +36,9 @@ export type ServerEnvKey =
   | "FIREBASE_PROJECT_ID"
   | "FIREBASE_CLIENT_EMAIL"
   | "FIREBASE_PRIVATE_KEY"
+  | "FIREBASE_STORAGE_BUCKET"
+  // Push interno (webhook disparado pelo banco)
+  | "PUSH_WEBHOOK_SECRET"
   // Pipeline de mídia (FFmpeg roda fora do Worker)
   | "MEDIA_WORKER_URL"
   | "MEDIA_WORKER_SECRET";
