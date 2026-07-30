@@ -45,6 +45,15 @@ export async function enablePush(): Promise<
     });
 
   const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+  await navigator.serviceWorker.ready;
+  registration.active?.postMessage({
+    firebaseConfig: {
+      apiKey: publicEnv.firebase.apiKey,
+      projectId: publicEnv.firebase.projectId,
+      appId: publicEnv.firebase.appId,
+      messagingSenderId: publicEnv.firebase.messagingSenderId,
+    },
+  });
   const token = await getToken(getMessaging(app), {
     vapidKey: publicEnv.firebase.vapidKey!,
     serviceWorkerRegistration: registration,
