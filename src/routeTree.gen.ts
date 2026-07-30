@@ -31,6 +31,7 @@ import { Route as ConfiguracoesSuporteIndexRouteImport } from './routes/configur
 import { Route as ConfiguracoesLegalIndexRouteImport } from './routes/configuracoes.legal.index'
 import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configuracoes.suporte.$slug'
 import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
+import { Route as ApiPublicWebhooksPushRouteImport } from './routes/api/public/webhooks/push'
 import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -147,6 +148,11 @@ const ConfiguracoesLegalSlugRoute = ConfiguracoesLegalSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ConfiguracoesLegalRoute,
 } as any)
+const ApiPublicWebhooksPushRoute = ApiPublicWebhooksPushRouteImport.update({
+  id: '/api/public/webhooks/push',
+  path: '/api/public/webhooks/push',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicWebhooksPagarmeRoute =
   ApiPublicWebhooksPagarmeRouteImport.update({
     id: '/api/public/webhooks/pagarme',
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
+  '/api/public/webhooks/push': typeof ApiPublicWebhooksPushRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -198,6 +205,7 @@ export interface FileRoutesByTo {
   '/configuracoes/legal': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteIndexRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
+  '/api/public/webhooks/push': typeof ApiPublicWebhooksPushRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
+  '/api/public/webhooks/push': typeof ApiPublicWebhooksPushRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -250,6 +259,7 @@ export interface FileRouteTypes {
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
     | '/api/public/webhooks/pagarme'
+    | '/api/public/webhooks/push'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -271,6 +281,7 @@ export interface FileRouteTypes {
     | '/configuracoes/legal'
     | '/configuracoes/suporte'
     | '/api/public/webhooks/pagarme'
+    | '/api/public/webhooks/push'
   id:
     | '__root__'
     | '/'
@@ -296,6 +307,7 @@ export interface FileRouteTypes {
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
     | '/api/public/webhooks/pagarme'
+    | '/api/public/webhooks/push'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -307,6 +319,7 @@ export interface RootRouteChildren {
   ResetPasswordRoute: typeof ResetPasswordRoute
   PerfilUsernameRoute: typeof PerfilUsernameRoute
   ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
+  ApiPublicWebhooksPushRoute: typeof ApiPublicWebhooksPushRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -465,6 +478,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfiguracoesLegalSlugRouteImport
       parentRoute: typeof ConfiguracoesLegalRoute
     }
+    '/api/public/webhooks/push': {
+      id: '/api/public/webhooks/push'
+      path: '/api/public/webhooks/push'
+      fullPath: '/api/public/webhooks/push'
+      preLoaderRoute: typeof ApiPublicWebhooksPushRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/webhooks/pagarme': {
       id: '/api/public/webhooks/pagarme'
       path: '/api/public/webhooks/pagarme'
@@ -551,6 +571,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResetPasswordRoute: ResetPasswordRoute,
   PerfilUsernameRoute: PerfilUsernameRoute,
   ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
+  ApiPublicWebhooksPushRoute: ApiPublicWebhooksPushRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
