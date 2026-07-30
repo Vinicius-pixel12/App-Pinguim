@@ -33,6 +33,10 @@ function Notificacoes() {
         <p className="text-xs text-muted-foreground">Pedidos de conversa recebidos</p>
       </header>
 
+      <PushOptIn />
+
+
+
       {requests.length === 0 ? (
         <div className="p-8 text-center text-sm text-muted-foreground">
           Nenhum pedido pendente.
