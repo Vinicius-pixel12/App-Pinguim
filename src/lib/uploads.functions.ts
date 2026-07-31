@@ -45,7 +45,7 @@ function extFor(contentType: string) {
 /** Diagnóstico público: o R2 está configurado neste ambiente? */
 export const getStorageStatus = createServerFn({ method: "GET" }).handler(async () => {
   const { isR2Configured } = await import("@/services/storage/r2.provider.server");
-  return { configured: isR2Configured(), publicBase: process.env.R2_PUBLIC_BASE_URL ?? null };
+  return { configured: isR2Configured() };
 });
 
 export const createImageUploadUrl = createServerFn({ method: "POST" })
