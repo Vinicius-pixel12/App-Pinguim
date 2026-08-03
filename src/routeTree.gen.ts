@@ -33,6 +33,7 @@ import { Route as ConfiguracoesSuporteSlugRouteImport } from './routes/configura
 import { Route as ConfiguracoesLegalSlugRouteImport } from './routes/configuracoes.legal.$slug'
 import { Route as ApiPublicWebhooksPushRouteImport } from './routes/api/public/webhooks/push'
 import { Route as ApiPublicWebhooksPagarmeRouteImport } from './routes/api/public/webhooks/pagarme'
+import { Route as ApiPublicJobsActionRouteImport } from './routes/api/public/jobs.$action'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -159,6 +160,11 @@ const ApiPublicWebhooksPagarmeRoute =
     path: '/api/public/webhooks/pagarme',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicJobsActionRoute = ApiPublicJobsActionRouteImport.update({
+  id: '/api/public/jobs/$action',
+  path: '/api/public/jobs/$action',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -182,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/jobs/$action': typeof ApiPublicJobsActionRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
   '/api/public/webhooks/push': typeof ApiPublicWebhooksPushRoute
 }
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/jobs/$action': typeof ApiPublicJobsActionRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
   '/api/public/webhooks/push': typeof ApiPublicWebhooksPushRoute
 }
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/configuracoes/suporte/$slug': typeof ConfiguracoesSuporteSlugRoute
   '/configuracoes/legal/': typeof ConfiguracoesLegalIndexRoute
   '/configuracoes/suporte/': typeof ConfiguracoesSuporteIndexRoute
+  '/api/public/jobs/$action': typeof ApiPublicJobsActionRoute
   '/api/public/webhooks/pagarme': typeof ApiPublicWebhooksPagarmeRoute
   '/api/public/webhooks/push': typeof ApiPublicWebhooksPushRoute
 }
@@ -258,6 +267,7 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
+    | '/api/public/jobs/$action'
     | '/api/public/webhooks/pagarme'
     | '/api/public/webhooks/push'
   fileRoutesByTo: FileRoutesByTo
@@ -280,6 +290,7 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal'
     | '/configuracoes/suporte'
+    | '/api/public/jobs/$action'
     | '/api/public/webhooks/pagarme'
     | '/api/public/webhooks/push'
   id:
@@ -306,6 +317,7 @@ export interface FileRouteTypes {
     | '/configuracoes/suporte/$slug'
     | '/configuracoes/legal/'
     | '/configuracoes/suporte/'
+    | '/api/public/jobs/$action'
     | '/api/public/webhooks/pagarme'
     | '/api/public/webhooks/push'
   fileRoutesById: FileRoutesById
@@ -318,6 +330,7 @@ export interface RootRouteChildren {
   ExplorarRoute: typeof ExplorarRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   PerfilUsernameRoute: typeof PerfilUsernameRoute
+  ApiPublicJobsActionRoute: typeof ApiPublicJobsActionRoute
   ApiPublicWebhooksPagarmeRoute: typeof ApiPublicWebhooksPagarmeRoute
   ApiPublicWebhooksPushRoute: typeof ApiPublicWebhooksPushRoute
 }
@@ -492,6 +505,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicWebhooksPagarmeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/$action': {
+      id: '/api/public/jobs/$action'
+      path: '/api/public/jobs/$action'
+      fullPath: '/api/public/jobs/$action'
+      preLoaderRoute: typeof ApiPublicJobsActionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -570,6 +590,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExplorarRoute: ExplorarRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   PerfilUsernameRoute: PerfilUsernameRoute,
+  ApiPublicJobsActionRoute: ApiPublicJobsActionRoute,
   ApiPublicWebhooksPagarmeRoute: ApiPublicWebhooksPagarmeRoute,
   ApiPublicWebhooksPushRoute: ApiPublicWebhooksPushRoute,
 }
