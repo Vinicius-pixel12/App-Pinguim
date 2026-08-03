@@ -288,6 +288,63 @@ export type Database = {
           },
         ]
       }
+      jobs: {
+        Row: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          locked_at: string | null
+          locked_by: string | null
+          max_attempts: number
+          payload: Json
+          priority: number
+          result: Json | null
+          run_after: string
+          started_at: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          max_attempts?: number
+          payload?: Json
+          priority?: number
+          result?: Json | null
+          run_after?: string
+          started_at?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          locked_at?: string | null
+          locked_by?: string | null
+          max_attempts?: number
+          payload?: Json
+          priority?: number
+          result?: Json | null
+          run_after?: string
+          started_at?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       kyc_verifications: {
         Row: {
           cpf: string | null
@@ -961,9 +1018,54 @@ export type Database = {
     }
     Functions: {
       can_view_profile: { Args: { _profile_id: string }; Returns: boolean }
+      claim_jobs: {
+        Args: { _limit?: number; _types?: string[]; _worker: string }
+        Returns: {
+          attempts: number
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          locked_at: string | null
+          locked_by: string | null
+          max_attempts: number
+          payload: Json
+          priority: number
+          result: Json | null
+          run_after: string
+          started_at: string | null
+          status: string
+          type: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "jobs"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      complete_job: {
+        Args: { _job_id: string; _result?: Json }
+        Returns: undefined
+      }
       create_conversation_request: {
         Args: { _channel?: string; _message?: string; _target_id: string }
         Returns: string
+      }
+      enqueue_job: {
+        Args: {
+          _max_attempts?: number
+          _payload?: Json
+          _priority?: number
+          _run_after?: string
+          _type: string
+        }
+        Returns: string
+      }
+      fail_job: {
+        Args: { _error: string; _job_id: string; _retry?: boolean }
+        Returns: undefined
       }
       follower_counts: {
         Args: { _profile_id: string }
@@ -985,6 +1087,7 @@ export type Database = {
       }
       purge_expired_stories: { Args: never; Returns: number }
       request_withdraw: { Args: { _amount: number }; Returns: string }
+      requeue_stalled_jobs: { Args: { _older_than?: string }; Returns: number }
       respond_conversation_request: {
         Args: { _accept: boolean; _request_id: string }
         Returns: undefined
