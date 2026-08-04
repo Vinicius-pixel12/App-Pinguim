@@ -1,0 +1,24 @@
+services:
+  - type: worker
+    name: pinguim-worker
+    runtime: node
+    plan: starter
+    rootDir: pinguim-worker
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: WORKER_NAME
+        value: pinguim-worker-1
+      - key: WORKER_BATCH_SIZE
+        value: "3"
+      - key: WORKER_POLL_INTERVAL_MS
+        value: "3000"
+      - key: LOG_LEVEL
+        value: info
