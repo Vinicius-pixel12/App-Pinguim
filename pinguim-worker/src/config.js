@@ -19,9 +19,9 @@ function int(name, fallback) {
 }
 
 export const config = {
-  supabase: {
-    url: requireEnv("SUPABASE_URL"),
-    serviceRoleKey: requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
+  app: {
+    baseUrl: requireEnv("APP_BASE_URL").replace(/\/$/, ""),
+    workerSecret: requireEnv("JOBS_WORKER_SECRET"),
   },
   worker: {
     name: env("WORKER_NAME", `pinguim-worker-${process.pid}`),

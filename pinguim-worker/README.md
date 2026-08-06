@@ -1,24 +1,39 @@
 # pinguim-worker
 
-Worker de background do Pinguim. Consome a tabela `public.jobs` do Supabase e
-executa tarefas pesadas que não podem rodar no runtime serverless do aplicativo
-(FFmpeg, push, PIX, IA, KYC).
+Worker de background do Pinguim. Consome a tabela `public.jobs` indiretamente
+através da API HTTP do aplicativo principal, pois o Lovable Cloud não expõe o
+`SUPABASE_SERVICE_ROLE_KEY`.
 
 ```
-App (TanStack)  ──enqueue_job()──►  Supabase: public.jobs
+App (TanStack)  ──enqueue_job()──►  Lovable Cloud / Supabase: public.jobs
                                           │
-                        claim_jobs()  ◄───┘  (lock SKIP LOCKED)
+        POST /api/public/jobs/claim  ◄────┘  (lock SKIP LOCKED no banco)
                                           │
                                    pinguim-worker
                                           │
-                     complete_job() / fail_job() ──► app reage
+        POST /api/public/jobs/complete    │
+        POST /api/public/jobs/fail   ─────┘
 ```
+
+## Por que não acessa o Supabase diretamente?
+
+No Lovable Cloud o `SUPABASE_SERVICE_ROLE_KEY` é inacessível. Para manter o
+worker fora do runtime serverless (onde não existem `child_process`, FFmpeg etc.),
+o app principal expõe endpoints autenticados por `JOBS_WORKER_SECRET`:
+
+- `POST /api/public/jobs/claim`
+- `POST /api/public/jobs/requeue`
+- `POST /api/public/jobs/complete`
+- `POST /api/public/jobs/fail`
+
+O worker armazena esses segredos em variáveis de ambiente (`APP_BASE_URL` e
+`JOBS_WORKER_SECRET`) e nunca toca o Supabase diretamente.
 
 ## Rodando localmente
 
 ```bash
 cd pinguim-worker
-cp .env.example .env   # preencha SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY
+cp .env.example .env   # preencha APP_BASE_URL e JOBS_WORKER_SECRET
 npm install
 npm run dev
 ```
@@ -26,10 +41,10 @@ npm run dev
 ## Deploy no Render (Background Worker)
 
 1. New → **Background Worker**, aponte para este repositório.
-2. Root Directory: `pinguim-worker`
-3. Build Command: `npm install` · Start Command: `npm start`
-4. Environment: adicione `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY`
-   (e as demais chaves conforme for ativando cada integração).
+2. Build Command: `npm install` · Start Command: `npm start`
+3. Environment:
+   - `APP_BASE_URL` — URL publicada do app principal.
+   - `JOBS_WORKER_SECRET` — mesmo valor configurado no app principal.
 
 O arquivo `render.yaml` já traz esse blueprint pronto.
 
@@ -40,8 +55,7 @@ src/
   index.js                  loop principal + shutdown + janitor
   config.js                 env validado
   logger.js                 logs JSON estruturados
-  supabase.js               cliente service role
-  queue.js                  claim / complete / fail / requeue
+  queue.js                  claim / complete / fail / requeue via HTTP API
   processor.js              execução de um job (timeout + erros)
   errors.js                 PermanentError / TransientError
   handlers/                 um arquivo por tipo de job
@@ -64,7 +78,6 @@ src/
 
 ## Escala
 
-Suba N instâncias do worker: o `claim_jobs` usa `FOR UPDATE SKIP LOCKED`, então
-nenhum job é processado duas vezes. Ajuste `WORKER_BATCH_SIZE` e
-`WORKER_JOB_TYPES` para dedicar instâncias a tipos específicos (ex.: uma só de
-`compress_video`, outra de `send_push`).
+Suba N instâncias do worker: o `claim` usa `FOR UPDATE SKIP LOCKED` no banco, então
+nenhum job é processado duas vez. Ajuste `WORKER_BATCH_SIZE` e `WORKER_JOB_TYPES`
+para dedicar instâncias a tipos específicos (ex.: uma só de `compress_video`, outra de `send_push`).

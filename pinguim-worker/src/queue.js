@@ -1,42 +1,59 @@
-/** Acesso à fila `public.jobs` via funções SQL (claim/complete/fail). */
+/** Acesso à fila `public.jobs` via API HTTP do aplicativo principal. */
 
-import { supabase } from "./supabase.js";
 import { config } from "./config.js";
 
-/** Reserva atômica do próximo lote (FOR UPDATE SKIP LOCKED no banco). */
-export async function claimJobs(limit = 1, types = []) {
-  const { data, error } = await supabase.rpc("claim_jobs", {
-    _worker: config.worker.name,
-    _limit: limit,
-    _types: types.length ? types : null,
+function queueUrl(action) {
+  return `${config.app.baseUrl}/api/public/jobs/${action}`;
+}
+
+async function post(action, body) {
+  const response = await fetch(queueUrl(action), {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-worker-secret": config.app.workerSecret,
+    },
+    body: JSON.stringify(body),
   });
-  if (error) throw new Error(`claim_jobs falhou: ${error.message}`);
-  return data ?? [];
+
+  if (response.status === 401) {
+    throw new Error(`Autenticação do worker falhou (x-worker-secret inválido?)`);
+  }
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(data?.error || `API ${action} retornou ${response.status}`);
+  }
+
+  return data;
+}
+
+/** Reserva atômica do próximo lote de jobs. */
+export async function claimJobs(limit = 1, types = []) {
+  const data = await post("claim", {
+    worker: config.worker.name,
+    limit,
+    types: types.length ? types : undefined,
+  });
+  return data?.jobs ?? [];
 }
 
 export async function completeJob(jobId, result) {
-  const { error } = await supabase.rpc("complete_job", {
-    _job_id: jobId,
-    _result: result === undefined ? null : result,
-  });
-  if (error) throw new Error(`complete_job falhou: ${error.message}`);
+  await post("complete", { jobId, result: result ?? null });
 }
 
-/** retry=true devolve o job à fila com backoff exponencial (regra no banco). */
+/** retry=true devolve o job à fila com backoff exponencial (regra no app). */
 export async function failJob(jobId, message, retry = true) {
-  const { error } = await supabase.rpc("fail_job", {
-    _job_id: jobId,
-    _error: String(message).slice(0, 2000),
-    _retry: retry,
+  await post("fail", {
+    jobId,
+    error: String(message).slice(0, 2000),
+    retry,
   });
-  if (error) throw new Error(`fail_job falhou: ${error.message}`);
 }
 
 /** Recoloca na fila jobs travados por workers que morreram. */
 export async function requeueStalledJobs(olderThan = "10 minutes") {
-  const { data, error } = await supabase.rpc("requeue_stalled_jobs", {
-    _older_than: olderThan,
-  });
-  if (error) throw new Error(`requeue_stalled_jobs falhou: ${error.message}`);
-  return data ?? 0;
+  const data = await post("requeue", { olderThan });
+  return data?.requeued ?? 0;
 }

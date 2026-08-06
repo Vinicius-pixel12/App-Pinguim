@@ -10,9 +10,9 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "20"
-      - key: SUPABASE_URL
+      - key: APP_BASE_URL
         sync: false
-      - key: SUPABASE_SERVICE_ROLE_KEY
+      - key: JOBS_WORKER_SECRET
         sync: false
       - key: WORKER_NAME
         value: pinguim-worker-1
@@ -20,5 +20,30 @@ services:
         value: "3"
       - key: WORKER_POLL_INTERVAL_MS
         value: "3000"
+      - key: WORKER_IDLE_INTERVAL_MS
+        value: "8000"
       - key: LOG_LEVEL
         value: info
+      # ── Cloudflare R2 (futuro) ────────────────────────────────────────────
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_MEDIA
+        sync: false
+      - key: R2_BUCKET_KYC
+        sync: false
+      - key: R2_PUBLIC_BASE_URL
+        sync: false
+      # ── Firebase (futuro) ─────────────────────────────────────────────────
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_CLIENT_EMAIL
+        sync: false
+      - key: FIREBASE_PRIVATE_KEY
+        sync: false
+      # ── Pagar.me (futuro) ─────────────────────────────────────────────────
+      - key: PAGARME_SECRET_KEY
+        sync: false

@@ -100,6 +100,15 @@ export async function failJob(jobId: string, message: string, retry = true): Pro
   if (error) throw new Error(`Falha ao registrar erro do job: ${error.message}`);
 }
 
+export async function requeueStalledJobs(olderThan = "10 minutes"): Promise<number> {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.rpc("requeue_stalled_jobs", {
+    _older_than: olderThan,
+  });
+  if (error) throw new Error(`Falha ao requeue de jobs: ${error.message}`);
+  return (data ?? 0) as number;
+}
+
 /** Compara segredos em tempo constante. */
 export function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
