@@ -18,6 +18,8 @@ const claimSchema = z.object({
   types: z.array(z.string().min(1)).optional(),
 });
 
+const requeueSchema = z.object({ olderThan: z.string().optional() });
+
 const completeSchema = z.object({ jobId: z.string().uuid(), result: z.unknown().optional() });
 const failSchema = z.object({
   jobId: z.string().uuid(),
@@ -46,6 +48,13 @@ export const Route = createFileRoute("/api/public/jobs/$action")({
               parsed.data.types as never,
             );
             return Response.json({ jobs });
+          }
+
+          if (params.action === "requeue") {
+            const parsed = requeueSchema.safeParse(body);
+            if (!parsed.success) return new Response("Invalid body", { status: 400 });
+            const requeued = await queue.requeueStalledJobs(parsed.data.olderThan ?? "10 minutes");
+            return Response.json({ requeued });
           }
 
           if (params.action === "complete") {
